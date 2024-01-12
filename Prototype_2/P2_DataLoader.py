@@ -8,22 +8,22 @@ import numpy as np
 import pandas as pd
 from tensorflow import keras
 from scipy.fft import fft, ifft
+from scipy.signal import butter, filtfilt
 
-def high_pass(data, noise_frequency, sampling_rate):
-    n = len(data)
-    fft_data = fft(data)
-    freq = np.fft.fftfreq(n, d=1/sampling_rate)
-    noise_mask = np.logical_or(freq > noise_frequency, freq < -noise_frequency)
-    clean_data = ifft(fft_data * noise_mask)
-    return clean_data.real  # Extract real values
 
-def low_pass(data, noise_frequency, sampling_rate):
-    n = len(data)
-    fft_data = fft(data)
-    freq = np.fft.fftfreq(n, d=1/sampling_rate)
-    noise_mask = np.logical_and(freq < noise_frequency, freq > -noise_frequency)
-    clean_data = ifft(fft_data * noise_mask)
-    return clean_data.real  # Extract real values
+def bandPass(order, highStop, lowStop, sampleRate, data):
+    '''
+    The function uses a Butterworth bandpass filter and returns the filtered data
+    
+    :param order: order of the filter, int
+    :param highStop: high frequency before the roll off starts, int
+    :param lowStop: low frequency before the roll off starts, int
+    :param sampleRate: sample rate at which the data was collected, int
+    :param data: collected data, array_like
+    '''
+    b, a = butter(order, [highStop,lowStop], 'bandpass', fs=sampleRate)
+    return filtfilt(b, a, data)
+
 
 def get_data(file_path):
     data = np.genfromtxt(file_path, delimiter=',', skip_header=1)
@@ -33,24 +33,21 @@ def get_data(file_path):
     r = data[:, 4]
     return motor_speed, y, p, r
 
+
 def RNN_load_data(file_name, timesteps):
-    os.chdir('home/coder/workspace/Data/Prototype_2_Data/')
+    os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')
     # Load the CSV file
     motor_speed, y, p, r = get_data(file_name)
     
-    low_noise = 0.015
-    high_noise = 2
-    sampling_rate = 25
+    order = 3 # Roll off of 18 dB per octave
+    highStop = 0.1 # Hz
+    lowStop = 2.5 # Hz
+    sampleRate = 25
 
-    motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
-    y = high_pass(y, low_noise, sampling_rate)
-    p = high_pass(p, low_noise, sampling_rate)
-    r = high_pass(r, low_noise, sampling_rate)
-
-    motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
-    y = low_pass(y, high_noise, sampling_rate)
-    p = low_pass(p, high_noise, sampling_rate)
-    r = low_pass(r, high_noise, sampling_rate)
+    motor_speed = bandPass(order, highStop, lowStop, sampleRate, motor_speed)
+    y = bandPass(order, highStop, lowStop, sampleRate, y)
+    p = bandPass(order, highStop, lowStop, sampleRate, p)
+    r = bandPass(order, highStop, lowStop, sampleRate, r)
 
     # Create data input and output sets
     inputs = []
@@ -64,24 +61,11 @@ def RNN_load_data(file_name, timesteps):
     
     return inputs, outputs
 
+
 def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
     os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')
     # Load the CSV file
     motor_speed, y, p, r = get_data(readfile)
-
-    low_noise = 0.015
-    high_noise = 2
-    sampling_rate = 25
-
-    #motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
-    y = high_pass(y, low_noise, sampling_rate)
-    p = high_pass(p, low_noise, sampling_rate)
-    r = high_pass(r, low_noise, sampling_rate)
-
-    #motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
-    y = low_pass(y, high_noise, sampling_rate)
-    p = low_pass(p, high_noise, sampling_rate)
-    r = low_pass(r, high_noise, sampling_rate)
 
     # Number of predictions to make
     num_predictions = num_predictions - timesteps 
@@ -108,15 +92,18 @@ def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
         # Prepare the input data and make predictions
         for i in range(num_predictions):
             # Make the prediction
+            print(np.array([inputs]))
             prediction = model.predict(np.array([inputs]))
             print(prediction[0])
             
             # Update the distance array by eliminating the first value and shifting the rest down
             prediction = prediction[0]
             new_input = [motor_speed[i+timesteps], prediction[0],prediction[1],prediction[2]]
-            inputs = np.concatenate([inputs[1:], [new_input]])
+            print(new_input)
+            inputs = np.append(inputs[1:], new_input)
+            #inputs = np.array([inputs])
 
             # Writes the predicted values to columns after the motor input data
-            writer.writerow([prediction[0],prediction[1],prediction[2],y[i+timesteps],p[i+timesteps],r[i+timesteps]])
+            writer.writerow([prediction[0],prediction[1],prediction[2]])
             predicted.append([prediction[0],prediction[1],prediction[2]])
     return(actual, predicted)

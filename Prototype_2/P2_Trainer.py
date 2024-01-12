@@ -8,6 +8,7 @@ from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU, BatchNormalizat
 from tensorflow.keras.optimizers import Adam
 from P2_DataLoader import RNN_load_data
 
+
 timesteps = 25
 
 # Data Sets
