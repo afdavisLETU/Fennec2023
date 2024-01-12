@@ -2,10 +2,12 @@
 #Written By: Micah Heikkila
 #Last Modified: July 2,2023
 
+import os
 import csv
 import numpy as np 
 import pandas as pd
 from tensorflow import keras
+from scipy.fft import fft, ifft
 
 def high_pass(data, noise_frequency, sampling_rate):
     n = len(data)
@@ -32,13 +34,28 @@ def get_data(file_path):
     return motor_speed, y, p, r
 
 def RNN_load_data(file_name, timesteps):
+    os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')
     # Load the CSV file
     motor_speed, y, p, r = get_data(file_name)
     
+    low_noise = 0.015
+    high_noise = 2
+    sampling_rate = 25
+
+    motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
+    y = high_pass(y, low_noise, sampling_rate)
+    p = high_pass(p, low_noise, sampling_rate)
+    r = high_pass(r, low_noise, sampling_rate)
+
+    motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
+    y = low_pass(y, high_noise, sampling_rate)
+    p = low_pass(p, high_noise, sampling_rate)
+    r = low_pass(r, high_noise, sampling_rate)
+
     # Create data input and output sets
     inputs = []
     outputs = []
-    for i in range(timesteps, len(data)):
+    for i in range(timesteps, len(motor_speed)):
         timestep_inputs = np.transpose(np.array([motor_speed[i-timesteps:i], y[i-timesteps:i], p[i-timesteps:i], r[i-timesteps:i]]))
         inputs.append(timestep_inputs)
         outputs.append([y[i], p[i], r[i]])
@@ -48,8 +65,6 @@ def RNN_load_data(file_name, timesteps):
     return inputs, outputs
 
 def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
-    # Load the CSV file
-    data = pd.read_csv(readfile)
     
     # Number of predictions to make
     num_predictions = num_predictions - timesteps 
