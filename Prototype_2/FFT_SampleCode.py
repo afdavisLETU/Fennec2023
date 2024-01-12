@@ -29,8 +29,8 @@ def load_accelerometer_data(file_path):
     return ms, y, p, r
 
 # Specify the CSV file path and noise frequency
-file_path = "AutoP2_data6.csv"
-output_file_path = "cleaned_acceleration_data.csv"
+file_path = "/home/coder/workspace/Data/Prototype_2_Data/AutoP2_Data1.csv"
+output_file_path = "/home/coder/workspace/Data/Prototype_2_Data/Cleaned_AutoP2_Data1.csv"
 low_noise = 0.015
 high_noise = 2
 
@@ -82,4 +82,5 @@ plt.ylabel("Magnitude")
 plt.xlim([-1, 1])
 
 plt.tight_layout()
+plt.savefig('/home/coder/workspace/Data/Prototype_2_Data/Cleaned_AutoP2_Data1_Image.png')
 plt.show()

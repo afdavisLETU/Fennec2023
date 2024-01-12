@@ -6,7 +6,7 @@ import csv
 import numpy as np 
 import pandas as pd
 from tensorflow import keras
-
+    
 def FNN_load_data(file_name, timesteps):
     # Load the CSV file
     data = pd.read_csv(file_name)
