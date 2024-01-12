@@ -22,7 +22,7 @@ dataSet8 = "Manual_Data1_with_Zero.csv"
 dataSet9 = "Manual_Data2_with_Zero.csv"
 dataSet10 = "Manual_Data3_with_Zero.csv"
 dataSet11 = "Manual_Data4_with_Zero.csv"
-# dataSet12 = "data12.csv"
+dataSet12 = "Manual_Data5_with_Zero.csv"
 # dataSet13 = "data13.csv"
 data = [dataSet2,dataSet3,dataSet4,dataSet5,dataSet6,dataSet7,dataSet8,dataSet9,dataSet10,dataSet11]
 
@@ -36,7 +36,7 @@ for dataSet in data:
 
 # Define the neural network model
 model = Sequential([
-    GRU(units=75, activation='relu'),
+    GRU(units=50, activation='relu'),
     Dense(units=50, activation='relu'),
     Dense(units=25, activation='relu'),
     Dense(units=3, activation='linear')  
@@ -46,9 +46,11 @@ model = Sequential([
 model.compile(optimizer=Adam(), loss='mse', metrics=['accuracy'])
 
 # Train the model
-model.fit(inputs, outputs, epochs=5, batch_size=75)
-model.fit(inputs, outputs, epochs=5, batch_size=150)
-model.fit(inputs, outputs, epochs=5, batch_size=300)
+model.fit(inputs, outputs, epochs=5, batch_size=250)
+model.fit(inputs, outputs, epochs=5, batch_size=500)
+model.fit(inputs, outputs, epochs=10, batch_size=1000)
+model.fit(inputs, outputs, epochs=15, batch_size=2500)
+model.fit(inputs, outputs, epochs=15, batch_size=5000)
 
 # Save the model
 model.save('P2_Model.h5')

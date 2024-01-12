@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from P2_DataLoader import RNN_model_predict
 
 model = 'P2_Model.h5'
-readfile = 'AutoP2_Data6.csv'
+readfile = 'Manual_Data5_with_Zero.csv'
 writefile = 'Prediction.csv'
 timesteps = 25
 num_predictions = 9327 # If value error: reduce number # If shape error: increase to displayed number

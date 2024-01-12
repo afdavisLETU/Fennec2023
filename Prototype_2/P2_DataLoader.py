@@ -34,7 +34,7 @@ def get_data(file_path):
     return motor_speed, y, p, r
 
 def RNN_load_data(file_name, timesteps):
-    os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')
+    os.chdir('home/coder/workspace/Data/Prototype_2_Data/')
     # Load the CSV file
     motor_speed, y, p, r = get_data(file_name)
     
