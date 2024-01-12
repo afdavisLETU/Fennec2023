@@ -34,5 +34,5 @@ inputs, outputs = RNN_load_data('AutoData-3.csv', timesteps)
 model.fit(inputs, outputs, epochs=50, batch_size=150)
 
 # Save the model
-#model.save('DMNN.h5')
+model.save('DMNN.h5')
 
