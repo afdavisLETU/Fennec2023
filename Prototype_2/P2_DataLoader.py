@@ -22,26 +22,26 @@ def low_pass(data, noise_frequency, sampling_rate):
     noise_mask = np.logical_and(freq < noise_frequency, freq > -noise_frequency)
     clean_data = ifft(fft_data * noise_mask)
     return clean_data.real  # Extract real values
-    
+
+def get_data(file_path):
+    data = np.genfromtxt(file_path, delimiter=',', skip_header=1)
+    motor_speed = data[:, 1]
+    y = data[:, 2]
+    p = data[:, 3]
+    r = data[:, 4]
+    return motor_speed, y, p, r
+
 def RNN_load_data(file_name, timesteps):
     # Load the CSV file
-    data = pd.read_csv(file_name)
-    
-    # Read Data
-    motor_speed = data.iloc[:, 0].values  
-    distance = data.iloc[:, 1].values
-    
-    # Normalize data
-    motor_speed = motor_speed / 1000
-    distance = distance / 35
+    motor_speed, y, p, r = get_data(file_name)
     
     # Create data input and output sets
     inputs = []
     outputs = []
     for i in range(timesteps, len(data)):
-        timestep_inputs = np.transpose(np.array([motor_speed[i-timesteps:i], distance[i-timesteps:i]]))
+        timestep_inputs = np.transpose(np.array([motor_speed[i-timesteps:i], y[i-timesteps:i], p[i-timesteps:i], r[i-timesteps:i]]))
         inputs.append(timestep_inputs)
-        outputs.append(distance[i])
+        outputs.append([y[i], p[i], r[i]])
     
     inputs, outputs = np.array(inputs), np.array(outputs)
     
@@ -56,7 +56,6 @@ def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
     
     # Initial distance
     distance = data.iloc[0:timesteps, 1].values
-    distance = distance / 35
     actual = data.iloc[:,1].values
     predicted = []
         
@@ -78,7 +77,6 @@ def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
         for i in range(num_predictions):
             # Load input data
             motor_speed = data.iloc[i:i+timesteps, 0].values
-            motor_speed = motor_speed / 1000
             inputs = np.transpose(np.array([motor_speed, distance])).reshape(1,timesteps,2)
             
             # Make the prediction
