@@ -18,6 +18,9 @@ df = pd.read_csv(data)
 
 # Read the CSV file into a DataFrame
 df.insert(0, 0, 0)
+'''
+df.insert(column position to be inserted at (0 is far left), 'Name of Column', Number that you want the column to be populated with)
+'''
 
 finalname = data.replace('.csv', '_with_Zero.csv')
 

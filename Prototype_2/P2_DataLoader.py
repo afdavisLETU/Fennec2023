@@ -42,12 +42,12 @@ def RNN_load_data(file_name, timesteps):
     high_noise = 2
     sampling_rate = 25
 
-    #motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
+    motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
     y = high_pass(y, low_noise, sampling_rate)
     p = high_pass(p, low_noise, sampling_rate)
     r = high_pass(r, low_noise, sampling_rate)
 
-    #motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
+    motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
     y = low_pass(y, high_noise, sampling_rate)
     p = low_pass(p, high_noise, sampling_rate)
     r = low_pass(r, high_noise, sampling_rate)

@@ -18,13 +18,13 @@ dataSet4 = "AutoP2_Data4.csv"
 dataSet5 = "AutoP2_Data5.csv"
 dataSet6 = "AutoP2_Data6.csv"
 dataSet7 = "AutoP2_Data7.csv"
-# dataSet8 = "data8.csv"
-# dataSet9 = "data9.csv"
-# dataSet10 = "data10.csv"
-# dataSet11 = "data11.csv"
+dataSet8 = "Manual_Data1_with_Zero.csv"
+dataSet9 = "Manual_Data2_with_Zero.csv"
+dataSet10 = "Manual_Data3_with_Zero.csv"
+dataSet11 = "Manual_Data4_with_Zero.csv"
 # dataSet12 = "data12.csv"
 # dataSet13 = "data13.csv"
-data = [dataSet2, dataSet3, dataSet4, dataSet5, dataSet7]
+data = [dataSet2,dataSet3,dataSet4,dataSet5,dataSet6,dataSet7,dataSet8,dataSet9,dataSet10,dataSet11]
 
 # Timesteps
 inputs, outputs = RNN_load_data(dataSet1, timesteps)
