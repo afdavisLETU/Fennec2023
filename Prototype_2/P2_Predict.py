@@ -31,12 +31,12 @@ print("Percent Accuracy:", accuracy*100)
 x = range(num_predictions)
 
 # Plotting the data
-plt.plot(x, actual[0], label='Actual')
-plt.plot(x, predicted[0],'r--', label='Predicted')
+plt.plot(x, actual[0:num_predictions,0], label='Actual')
+plt.plot(x, predicted[:,0],'r--', label='Predicted')
 
 # Adding labels and title
 plt.ylabel('Angle')
 plt.title('Motion Prediction')
 plt.legend()
 plt.show()
-plt.save('graph.png')
+plt.imsave('graph.png')
