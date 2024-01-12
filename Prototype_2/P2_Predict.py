@@ -8,8 +8,8 @@ from P2_DataLoader import RNN_model_predict
 model = 'P2_Model.h5'
 readfile = 'AutoP2_Data6.csv'
 writefile = 'Prediction.csv'
-timesteps = 15
-num_predictions = 1258 # If value error: reduce number # If shape error: increase to displayed number
+timesteps = 25
+num_predictions = 9327 # If value error: reduce number # If shape error: increase to displayed number
 
 actual, predicted = RNN_model_predict(model, readfile, writefile, timesteps, num_predictions)
 
@@ -25,3 +25,4 @@ plt.ylabel('Angle')
 plt.title('Motion Prediction')
 plt.legend()
 plt.show()
+plt.save('graph.png')

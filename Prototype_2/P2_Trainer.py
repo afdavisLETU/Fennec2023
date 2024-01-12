@@ -8,7 +8,7 @@ from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU, BatchNormalizat
 from tensorflow.keras.optimizers import Adam
 from P2_DataLoader import RNN_load_data
 
-timesteps = 15
+timesteps = 25
 
 # Data Sets
 dataSet1 = "AutoP2_Data1.csv"
@@ -24,7 +24,7 @@ dataSet7 = "AutoP2_Data7.csv"
 # dataSet11 = "data11.csv"
 # dataSet12 = "data12.csv"
 # dataSet13 = "data13.csv"
-data = [dataSet2, dataSet3, dataSet4, dataSet5, dataSet6, dataSet7]
+data = [dataSet2, dataSet3, dataSet4, dataSet5, dataSet7]
 
 # Timesteps
 inputs, outputs = RNN_load_data(dataSet1, timesteps)
@@ -46,10 +46,10 @@ model = Sequential([
 model.compile(optimizer=Adam(), loss='mse', metrics=['accuracy'])
 
 # Train the model
-print(inputs)
-print(outputs)
-model.fit(inputs, outputs, epochs=5, batch_size=50)
-model.fit(inputs, outputs, epochs=55, batch_size=150)
+model.fit(inputs, outputs, epochs=5, batch_size=75)
+model.fit(inputs, outputs, epochs=5, batch_size=150)
+model.fit(inputs, outputs, epochs=5, batch_size=300)
+
 # Save the model
 model.save('P2_Model.h5')
 

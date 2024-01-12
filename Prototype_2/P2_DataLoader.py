@@ -42,12 +42,12 @@ def RNN_load_data(file_name, timesteps):
     high_noise = 2
     sampling_rate = 25
 
-    motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
+    #motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
     y = high_pass(y, low_noise, sampling_rate)
     p = high_pass(p, low_noise, sampling_rate)
     r = high_pass(r, low_noise, sampling_rate)
 
-    motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
+    #motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
     y = low_pass(y, high_noise, sampling_rate)
     p = low_pass(p, high_noise, sampling_rate)
     r = low_pass(r, high_noise, sampling_rate)
@@ -68,6 +68,20 @@ def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
     os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')
     # Load the CSV file
     motor_speed, y, p, r = get_data(readfile)
+
+    low_noise = 0.015
+    high_noise = 2
+    sampling_rate = 25
+
+    #motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
+    y = high_pass(y, low_noise, sampling_rate)
+    p = high_pass(p, low_noise, sampling_rate)
+    r = high_pass(r, low_noise, sampling_rate)
+
+    #motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
+    y = low_pass(y, high_noise, sampling_rate)
+    p = low_pass(p, high_noise, sampling_rate)
+    r = low_pass(r, high_noise, sampling_rate)
 
     # Number of predictions to make
     num_predictions = num_predictions - timesteps 
@@ -94,18 +108,15 @@ def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
         # Prepare the input data and make predictions
         for i in range(num_predictions):
             # Make the prediction
-            print(np.array([inputs]))
             prediction = model.predict(np.array([inputs]))
             print(prediction[0])
             
             # Update the distance array by eliminating the first value and shifting the rest down
             prediction = prediction[0]
             new_input = [motor_speed[i+timesteps], prediction[0],prediction[1],prediction[2]]
-            print(new_input)
-            inputs = np.append(inputs[1:], new_input)
-            #inputs = np.array([inputs])
+            inputs = np.concatenate([inputs[1:], [new_input]])
 
             # Writes the predicted values to columns after the motor input data
-            writer.writerow([prediction[0],prediction[1],prediction[2]])
+            writer.writerow([prediction[0],prediction[1],prediction[2],y[i+timesteps],p[i+timesteps],r[i+timesteps]])
             predicted.append([prediction[0],prediction[1],prediction[2]])
     return(actual, predicted)
