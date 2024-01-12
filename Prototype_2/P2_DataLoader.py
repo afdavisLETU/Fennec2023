@@ -88,7 +88,7 @@ def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
     
     # Initial distance
     inputs = np.transpose(np.array([motor_speed[0:timesteps],y[0:timesteps],p[0:timesteps],r[0:timesteps]]))
-    actual = np.array([y,p,r])
+    actual = np.transpose(np.array([y,p,r]))
     predicted = []
         
     # Load the trained model
@@ -119,4 +119,4 @@ def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
             # Writes the predicted values to columns after the motor input data
             writer.writerow([prediction[0],prediction[1],prediction[2],y[i+timesteps],p[i+timesteps],r[i+timesteps]])
             predicted.append([prediction[0],prediction[1],prediction[2]])
-    return(actual, predicted)
+    return np.array(actual), np.array(predicted)
