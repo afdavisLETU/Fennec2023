@@ -34,66 +34,85 @@ def get_data(file_path):
     return motor_speed, y, p, r
 
 def RNN_load_data(file_name, timesteps):
-    os.chdir('home/coder/workspace/Data/Prototype_2_Data/')
+    os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')
     # Load the CSV file
     motor_speed, y, p, r = get_data(file_name)
     
-    low_noise = 0.015
-    high_noise = 2
+    low_noise = 0.01
+    high_noise = 2.5
     sampling_rate = 25
 
-    motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
-    y = high_pass(y, low_noise, sampling_rate)
-    p = high_pass(p, low_noise, sampling_rate)
-    r = high_pass(r, low_noise, sampling_rate)
+    spike_limit = 0.15
+    for t in range(len(y)-1):
+        if abs(y[t]) > abs((y[t+1]+y[t-1])/2) + spike_limit:
+            y[t] = (y[t+1]+y[t-1])/2
+        if abs(p[t]) > abs((p[t+1]+p[t-1])/2) + spike_limit:
+            p[t] = (p[t+1]+p[t-1])/2
+        if abs(r[t]) > abs((r[t+1]+r[t-1])/2) + spike_limit:
+            r[t] = (r[t+1]+r[t-1])/2
+            
+    #motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
+    #y = high_pass(y, low_noise, sampling_rate)
+    #p = high_pass(p, low_noise, sampling_rate)
+    #r = high_pass(r, low_noise, sampling_rate)
 
-    motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
-    y = low_pass(y, high_noise, sampling_rate)
-    p = low_pass(p, high_noise, sampling_rate)
-    r = low_pass(r, high_noise, sampling_rate)
+    #motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
+    #y = low_pass(y, high_noise, sampling_rate)
+    #p = low_pass(p, high_noise, sampling_rate)
+    #r = low_pass(r, high_noise, sampling_rate)
 
     # Create data input and output sets
     inputs = []
     outputs = []
     for i in range(timesteps, len(motor_speed)):
-        timestep_inputs = np.transpose(np.array([motor_speed[i-timesteps:i], y[i-timesteps:i], p[i-timesteps:i], r[i-timesteps:i]]))
+        timestep_inputs = np.transpose(np.array([motor_speed[i-timesteps:i], y[i-timesteps:i], p[i-timesteps:i]]))
         inputs.append(timestep_inputs)
-        outputs.append([y[i], p[i], r[i]])
+        outputs.append([y[i], p[i]])
     
     inputs, outputs = np.array(inputs), np.array(outputs)
     
     return inputs, outputs
 
-def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
+def RNN_model_predict(model_1, model_2, readfile, writefile, timesteps, num_predictions):
     os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')
     # Load the CSV file
     motor_speed, y, p, r = get_data(readfile)
 
-    low_noise = 0.015
-    high_noise = 2
+    low_noise = 0.01
+    high_noise = 2.5
     sampling_rate = 25
 
+    spike_limit = 0.15
+    for t in range(len(y)-1):
+        if abs(y[t]) > abs((y[t+1]+y[t-1])/2) + spike_limit:
+            y[t] = (y[t+1]+y[t-1])/2
+        if abs(p[t]) > abs((p[t+1]+p[t-1])/2) + spike_limit:
+            p[t] = (p[t+1]+p[t-1])/2
+        if abs(r[t]) > abs((r[t+1]+r[t-1])/2) + spike_limit:
+            r[t] = (r[t+1]+r[t-1])/2
+
     #motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
-    y = high_pass(y, low_noise, sampling_rate)
-    p = high_pass(p, low_noise, sampling_rate)
-    r = high_pass(r, low_noise, sampling_rate)
+    #y = high_pass(y, low_noise, sampling_rate)
+    #p = high_pass(p, low_noise, sampling_rate)
+    #r = high_pass(r, low_noise, sampling_rate)
 
     #motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
-    y = low_pass(y, high_noise, sampling_rate)
-    p = low_pass(p, high_noise, sampling_rate)
-    r = low_pass(r, high_noise, sampling_rate)
+    #y = low_pass(y, high_noise, sampling_rate)
+    #p = low_pass(p, high_noise, sampling_rate)
+    #r = low_pass(r, high_noise, sampling_rate)
 
     # Number of predictions to make
     num_predictions = num_predictions - timesteps 
-    
+
     # Initial distance
-    inputs = np.transpose(np.array([motor_speed[0:timesteps],y[0:timesteps],p[0:timesteps],r[0:timesteps]]))
-    actual = np.transpose(np.array([y,p,r]))
+    inputs = np.transpose(np.array([motor_speed[0:timesteps],y[0:timesteps],p[0:timesteps]]))
+    actual = np.transpose(np.array([y,p]))
     predicted = []
         
     # Load the trained model
-    model = keras.models.load_model(model)
-    
+    model_y = keras.models.load_model(model_1)
+    model_p = keras.models.load_model(model_2)
+
     # Open the CSV file for writing
     with open(writefile, mode='w', newline='') as file:
     
@@ -102,21 +121,20 @@ def RNN_model_predict(model, readfile, writefile, timesteps, num_predictions):
         
         # Write initial distances
         for t in range(timesteps):
-            writer.writerow([float(inputs[t,0]),float(inputs[t,1]),float(inputs[t,2])])
-            predicted.append([float(inputs[t,0]),float(inputs[t,1]),float(inputs[t,2])])
-        
+            writer.writerow([float(inputs[t,1]),float(inputs[t,2]),y[t],p[t]])
+            predicted.append([float(inputs[t,1]),float(inputs[t,2])])
+
         # Prepare the input data and make predictions
         for i in range(num_predictions):
             # Make the prediction
-            prediction = model.predict(np.array([inputs]))
-            print(prediction[0])
-            
+            prediction = np.array([float(model_y.predict(np.array([inputs]))),float(model_p.predict(np.array([inputs])))])
+
             # Update the distance array by eliminating the first value and shifting the rest down
-            prediction = prediction[0]
-            new_input = [motor_speed[i+timesteps], prediction[0],prediction[1],prediction[2]]
+            new_input = [motor_speed[i+timesteps], prediction[0],prediction[1]]
+            #new_input = [motor_speed[i+timesteps], y[i+timesteps],p[i+timesteps]]
             inputs = np.concatenate([inputs[1:], [new_input]])
 
             # Writes the predicted values to columns after the motor input data
-            writer.writerow([prediction[0],prediction[1],prediction[2],y[i+timesteps],p[i+timesteps],r[i+timesteps]])
-            predicted.append([prediction[0],prediction[1],prediction[2]])
+            writer.writerow([prediction[0],prediction[1],y[i+timesteps],p[i+timesteps]])
+            predicted.append([prediction[0],prediction[1]])
     return np.array(actual), np.array(predicted)
