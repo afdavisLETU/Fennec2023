@@ -7,40 +7,19 @@ import csv
 import numpy as np 
 import pandas as pd
 from tensorflow import keras
-from scipy.fft import fft, ifft
-
-def high_pass(data, noise_frequency, sampling_rate):
-    n = len(data)
-    fft_data = fft(data)
-    freq = np.fft.fftfreq(n, d=1/sampling_rate)
-    noise_mask = np.logical_or(freq > noise_frequency, freq < -noise_frequency)
-    clean_data = ifft(fft_data * noise_mask)
-    return clean_data.real  # Extract real values
-
-def low_pass(data, noise_frequency, sampling_rate):
-    n = len(data)
-    fft_data = fft(data)
-    freq = np.fft.fftfreq(n, d=1/sampling_rate)
-    noise_mask = np.logical_and(freq < noise_frequency, freq > -noise_frequency)
-    clean_data = ifft(fft_data * noise_mask)
-    return clean_data.real  # Extract real values
 
 def get_data(file_path):
     data = np.genfromtxt(file_path, delimiter=',', skip_header=1)
-    motor_speed = data[:, 1]
-    y = data[:, 2]
-    p = data[:, 3]
-    r = data[:, 4]
+    motor_speed = data[:, 0]
+    y = data[:, 1]
+    p = data[:, 2]
+    r = data[:, 3]
     return motor_speed, y, p, r
 
 def RNN_load_data(file_name, timesteps):
     os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')
     # Load the CSV file
     motor_speed, y, p, r = get_data(file_name)
-    
-    low_noise = 0.01
-    high_noise = 2.5
-    sampling_rate = 25
 
     spike_limit = 0.15
     for t in range(len(y)-1):
@@ -50,16 +29,6 @@ def RNN_load_data(file_name, timesteps):
             p[t] = (p[t+1]+p[t-1])/2
         if abs(r[t]) > abs((r[t+1]+r[t-1])/2) + spike_limit:
             r[t] = (r[t+1]+r[t-1])/2
-            
-    #motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
-    #y = high_pass(y, low_noise, sampling_rate)
-    #p = high_pass(p, low_noise, sampling_rate)
-    #r = high_pass(r, low_noise, sampling_rate)
-
-    #motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
-    #y = low_pass(y, high_noise, sampling_rate)
-    #p = low_pass(p, high_noise, sampling_rate)
-    #r = low_pass(r, high_noise, sampling_rate)
 
     # Create data input and output sets
     inputs = []
@@ -78,10 +47,6 @@ def RNN_model_predict(model_1, model_2, readfile, writefile, timesteps, num_pred
     # Load the CSV file
     motor_speed, y, p, r = get_data(readfile)
 
-    low_noise = 0.01
-    high_noise = 2.5
-    sampling_rate = 25
-
     spike_limit = 0.15
     for t in range(len(y)-1):
         if abs(y[t]) > abs((y[t+1]+y[t-1])/2) + spike_limit:
@@ -90,16 +55,6 @@ def RNN_model_predict(model_1, model_2, readfile, writefile, timesteps, num_pred
             p[t] = (p[t+1]+p[t-1])/2
         if abs(r[t]) > abs((r[t+1]+r[t-1])/2) + spike_limit:
             r[t] = (r[t+1]+r[t-1])/2
-
-    #motor_speed = high_pass(motor_speed, low_noise, sampling_rate)
-    #y = high_pass(y, low_noise, sampling_rate)
-    #p = high_pass(p, low_noise, sampling_rate)
-    #r = high_pass(r, low_noise, sampling_rate)
-
-    #motor_speed = low_pass(motor_speed, high_noise, sampling_rate)
-    #y = low_pass(y, high_noise, sampling_rate)
-    #p = low_pass(p, high_noise, sampling_rate)
-    #r = low_pass(r, high_noise, sampling_rate)
 
     # Number of predictions to make
     num_predictions = num_predictions - timesteps 

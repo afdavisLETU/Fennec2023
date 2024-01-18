@@ -8,7 +8,7 @@ from P2_DataLoader import RNN_model_predict
 
 model_y = 'P2_Model_Y.h5'
 model_p = 'P2_Model_P.h5'
-readfile = 'PS4_Data13.csv'
+readfile = 'P2_Data3.csv'
 writefile = 'Prediction.csv'
 timesteps = 15
 num_predictions = 250 # If value error: reduce number # If shape error: increase to displayed number
@@ -26,15 +26,26 @@ print("Percent Accuracy:", accuracy*100)
 
 
 # Generate x-axis values
-x = range(num_predictions)
+x = []
+for t in range(num_predictions):
+    x.append(t/25)
+x = np.array(x)
 
 # Plotting the data
+plt.subplot(2, 1, 1)
 plt.plot(x, actual[0:num_predictions,0], label='Actual')
 plt.plot(x, predicted[:,0],'r--', label='Predicted')
-
-# Adding labels and title
-plt.ylabel('Angle')
-plt.title('Motion Prediction')
+plt.xlabel("Time (s)")
+plt.ylabel("Y Gyro")
 plt.legend()
+
+plt.subplot(2, 1, 2)
+plt.plot(x, actual[0:num_predictions,1], label='Actual')
+plt.plot(x, predicted[:,1],'r--', label='Predicted')
+plt.xlabel("Time (s)")
+plt.ylabel("P Gyro")
+plt.legend()
+
+plt.tight_layout()
 plt.show()
 plt.savefig('graph.png')

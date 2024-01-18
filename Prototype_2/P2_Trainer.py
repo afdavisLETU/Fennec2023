@@ -11,31 +11,13 @@ from P2_DataLoader import RNN_load_data
 timesteps = 15
 
 # Data Sets
-dataSet1 = "AutoP2_Data1.csv"
-dataSet2 = "AutoP2_Data2.csv"
-dataSet3 = "AutoP2_Data3.csv"
-dataSet4 = "AutoP2_Data4.csv"
-dataSet5 = "AutoP2_Data5.csv"
-dataSet6 = "AutoP2_Data6.csv"
-dataSet7 = "AutoP2_Data7.csv"
-dataSet8 = "PS4_Data1.csv"
-dataSet9 = "PS4_Data2.csv"
-dataSet10 = "PS4_Data3.csv"
-dataSet11 = "PS4_Data4.csv"
-dataSet12 = "PS4_Data5.csv"
-dataSet13 = "PS4_Data6.csv"
-dataSet14 = "PS4_Data7.csv"
-dataSet15 = "PS4_Data8.csv"
-dataSet16 = "PS4_Data9.csv"
-dataSet17 = "PS4_Data10.csv"
-dataSet18 = "PS4_Data11.csv"
-dataSet19 = "PS4_Data12.csv"
-dataSet20 = "PS4_Data13.csv"
-dataSet21 = "PS4_Data14.csv"
+dataSet1 = "P2_Data1.csv"
+dataSet2 = "P2_Data2.csv"
+dataSet3 = "P2_Data3.csv"
+
 
 #Exclude dataSet1 in data array (Used later below)
-data = [dataSet2,dataSet3,dataSet4,dataSet5,dataSet6,dataSet7,dataSet8,dataSet9,dataSet10,dataSet11,dataSet12,
-        dataSet13,dataSet14,dataSet15,dataSet16,dataSet17,dataSet18,dataSet19,dataSet21]
+data = [dataSet2,dataSet3]
 
 # Timesteps
 inputs, outputs = RNN_load_data(dataSet1, timesteps)
@@ -48,16 +30,16 @@ for dataSet in data:
 
 # Define the neural network model
 model_y = Sequential([
-    GRU(units=500, activation='tanh',return_sequences=False),
-    Dense(units=150, activation='relu'),
-    Dense(units=50, activation='linear'),
+    GRU(units=150, activation='tanh',return_sequences=False),
+    Dense(units=100, activation='relu'),
+    Dense(units=75, activation='linear'),
     Dense(units=1, activation='linear')  
 ])
 
 model_p = Sequential([
-    GRU(units=500, activation='tanh',return_sequences=False),
-    Dense(units=150, activation='relu'),
-    Dense(units=50, activation='linear'),
+    GRU(units=150, activation='tanh',return_sequences=False),
+    Dense(units=100, activation='relu'),
+    Dense(units=75, activation='relu'),
     Dense(units=1, activation='linear')  
 ])
 
@@ -69,12 +51,12 @@ model_p.compile(optimizer=Adam(), loss='mse', metrics=['accuracy'])
 model_y.fit(inputs, outputs[:,0], epochs=3, batch_size=250)
 model_y.fit(inputs, outputs[:,0], epochs=5, batch_size=500)
 model_y.fit(inputs, outputs[:,0], epochs=10, batch_size=1000)
-model_y.fit(inputs, outputs[:,0], epochs=15, batch_size=2500)
+model_y.fit(inputs, outputs[:,0], epochs=25, batch_size=5000)
 
 model_p.fit(inputs, outputs[:,1], epochs=3, batch_size=250)
 model_p.fit(inputs, outputs[:,1], epochs=5, batch_size=500)
 model_p.fit(inputs, outputs[:,1], epochs=10, batch_size=1000)
-model_p.fit(inputs, outputs[:,1], epochs=15, batch_size=2500)
+model_p.fit(inputs, outputs[:,1], epochs=25, batch_size=5000)
 
 # Save the model
 model_y.save('P2_Model_Y.h5')
