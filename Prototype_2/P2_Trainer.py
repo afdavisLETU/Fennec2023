@@ -14,10 +14,11 @@ timesteps = 15
 dataSet1 = "P2_Data1.csv"
 dataSet2 = "P2_Data2.csv"
 dataSet3 = "P2_Data3.csv"
-
+dataSet4 = "P2_Data5.csv"
+dataSet5 = "P2_Data6.csv"
 
 #Exclude dataSet1 in data array (Used later below)
-data = [dataSet2,dataSet3]
+data = [dataSet2,dataSet3,dataSet4,dataSet5]
 
 # Timesteps
 inputs, outputs = RNN_load_data(dataSet1, timesteps)
