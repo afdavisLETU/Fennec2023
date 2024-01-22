@@ -28,14 +28,33 @@ def RNN_load_data(file_name, timesteps):
 
     # Create data input and output sets
     inputs = []
-    #outputs = []
     for i in range(timesteps, len(motor_speed)):
         timestep_inputs = np.transpose(np.array([motor_speed[i-timesteps:i], y[i-timesteps:i], p[i-timesteps:i]]))
         inputs.append(timestep_inputs)
         
-    inputs = np.array(inputs)#, np.array(outputData)
-    
-    return inputs
+    dataset = pd.read_csv(file_name).to_numpy()
+    length_data = len(inputs)
+    outputData = np.zeros((length_data, 3))
+    outputs = np.zeros((0, 3))
+    # Check conditions based on the dataset name
+    if 'rw' in file_name:
+        # Assign [0, 1, 0] to the second element of outputData
+        outputData[:, 1] = 1
+    elif 'lw' in file_name:
+        # Assign [0, 0, 1] to the first element of outputData
+        outputData[:, 2] = 1
+    else:
+        # Assign [1, 0, 0] to the third element of outputData
+        outputData[:, 0] = 1
+
+    outputs = np.concatenate((outputs, outputData), axis=0)
+    inputs = np.array(inputs)
+
+    #Troubleshooting
+    print(outputs)
+    # print(inputs.shape)
+
+    return inputs, outputs
 
 def RNN_model_predict(model_1, model_2, readfile, writefile, timesteps, num_predictions):
     os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')

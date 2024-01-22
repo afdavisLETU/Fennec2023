@@ -17,29 +17,7 @@ dataSet5 = "P2_Data6.csv"
 data = [dataSet1,dataSet2,dataSet3,dataSet4,dataSet5]
 
 for dataSet in data:
-    inputs = RNN_load_data(dataSet, timesteps)
-
-    dataset = pd.read_csv(dataSet).to_numpy()
-    length_data, _, width_data = inputs.shape
-    outputData = np.zeros((length_data, 3))
-    outputs = np.zeros((0, 3))
-    # Check conditions based on the dataset name
-    if 'rw' in dataSet:
-        # Assign [0, 1, 0] to the second element of outputData
-        outputData[:, 0] = 1
-    elif 'lw' in dataSet:
-        # Assign [1, 0, 0] to the first element of outputData
-        outputData[:, 1] = 1
-    else:
-        # Assign [0, 0, 1] to the third element of outputData
-        outputData[:, 1] = 1
-
-    #inputs = np.concatenate((inputs, inputData), axis=0)
-    outputs = np.concatenate((outputs, outputData), axis=0)
-    
-    #Troubleshooting
-    print(outputs.shape)
-    print(inputs.shape)
+    inputs, outputs = RNN_load_data(dataSet, timesteps)
 
 # Define the neural network model
 model_y = Sequential([
