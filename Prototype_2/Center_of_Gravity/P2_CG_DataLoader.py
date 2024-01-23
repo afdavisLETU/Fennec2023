@@ -50,13 +50,9 @@ def RNN_load_data(file_name, timesteps):
     outputs = np.concatenate((outputs, outputData), axis=0)
     inputs = np.array(inputs)
 
-    #Troubleshooting
-    print(outputs)
-    # print(inputs.shape)
-
     return inputs, outputs
 
-def RNN_model_predict(model_1, model_2, readfile, writefile, timesteps, num_predictions):
+def RNN_model_predict(model_1, readfile, writefile, timesteps, num_predictions):
     os.chdir('/home/coder/workspace/Data/Prototype_2_Data/')
     # Load the CSV file
     motor_speed, y, p, r = get_data(readfile)
@@ -73,14 +69,13 @@ def RNN_model_predict(model_1, model_2, readfile, writefile, timesteps, num_pred
     # Number of predictions to make
     num_predictions = num_predictions - timesteps 
 
-    # Initial distance
+    # Initial conditions
     inputs = np.transpose(np.array([motor_speed[0:timesteps],y[0:timesteps],p[0:timesteps]]))
     actual = np.transpose(np.array([y,p]))
     predicted = []
         
     # Load the trained model
-    model_y = keras.models.load_model(model_1)
-    model_p = keras.models.load_model(model_2)
+    model_cg = keras.models.load_model(model_1)
 
     # Open the CSV file for writing
     with open(writefile, mode='w', newline='') as file:
@@ -88,7 +83,7 @@ def RNN_model_predict(model_1, model_2, readfile, writefile, timesteps, num_pred
         # Create a writer object for writing rows to the CSV file
         writer = csv.writer(file)
         
-        # Write initial distances
+        # Write initial conditions
         for t in range(timesteps):
             writer.writerow([float(inputs[t,1]),float(inputs[t,2]),y[t],p[t]])
             predicted.append([float(inputs[t,1]),float(inputs[t,2])])
@@ -96,10 +91,10 @@ def RNN_model_predict(model_1, model_2, readfile, writefile, timesteps, num_pred
         # Prepare the input data and make predictions
         for i in range(num_predictions):
             # Make the prediction
-            prediction = np.array([float(model_y.predict(np.array([inputs]))),float(model_p.predict(np.array([inputs])))])
+            prediction = np.array([model_cg.predict(np.array([inputs]))])
 
             # Update the distance array by eliminating the first value and shifting the rest down
-            new_input = [motor_speed[i+timesteps], prediction[0],prediction[1]]
+            new_input = [motor_speed[i+timesteps], prediction[0],]
             #new_input = [motor_speed[i+timesteps], y[i+timesteps],p[i+timesteps]]
             inputs = np.concatenate([inputs[1:], [new_input]])
 

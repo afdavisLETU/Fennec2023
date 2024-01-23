@@ -8,7 +8,7 @@ from P2_DataLoader import RNN_model_predict
 
 model_y = 'P2_Model_Y.h5'
 model_p = 'P2_Model_P.h5'
-readfile = 'P2_Data7.csv'
+readfile = 'RW-P2_Data9.csv'
 writefile = 'Prediction.csv'
 timesteps = 15
 num_predictions = 250 # If value error: reduce number # If shape error: increase to displayed number
