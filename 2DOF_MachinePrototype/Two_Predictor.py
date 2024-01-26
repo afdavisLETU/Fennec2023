@@ -65,3 +65,5 @@ plt.tight_layout()
 # Adding labels and title
 plt.savefig("2DOFPredict.png") #this is super important on this system or else you won't be able to see plots
 plt.show()
+
+#IF YOU WANT TO OVERLAY THE INPUT DATA, GET THE CODE FROM P2_CG_Predictor.py

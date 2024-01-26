@@ -34,11 +34,11 @@ model = Sequential([
 model.compile(optimizer=Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
 
 inputs, outputs = extractData(csv_list)
-print('DONE 3')
+
 model.fit(inputs, outputs, epochs=3, batch_size=1000)
 model.fit(inputs, outputs, epochs=5, batch_size=2500)
 model.fit(inputs, outputs, epochs=8, batch_size=4000)
-model.fit(inputs, outputs, epochs=10, batch_size=5000)
+# model.fit(inputs, outputs, epochs=10, batch_size=5000)
 
 # Save the model
 model.save('2DOF-CGL1.h5')
