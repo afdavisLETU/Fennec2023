@@ -21,7 +21,7 @@ Data_Set_9 = '2DOF_Data9.csv'
 Data_Set_10 = '2DOF_Data10.csv'
 data = [Data_Set_1,Data_Set_10]#,Data_Set_4,Data_Set_5,Data_Set_6,Data_Set_7,Data_Set_8,Data_Set_9,Data_Set_10]  
 
-inputs, outputs = RNN_load_data(Data_Set_1, timesteps)
+inputs, outputs = RNN_load_data(Data_Set_1, timesteps) 
 
 for dataSet in data:
     inputData, outputData = RNN_load_data(dataSet, timesteps)

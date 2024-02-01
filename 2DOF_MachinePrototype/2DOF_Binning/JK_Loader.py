@@ -46,7 +46,7 @@ def RNN_load_data(file_name, timesteps):
         #Time[i-timesteps:i]]))
         inputs.append(timestep_inputs)
         
-    dataset = pd.read_csv(file_name).to_numpy()
+    dataset = pd.read_csv(file_name).to_numpy() 
     length_data = len(inputs)
     outputData = np.zeros((length_data, 2))
     outputs = np.zeros((0, 2))
