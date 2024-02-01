@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 from keras.models import load_model
 from Two_Load_Data_Bin import extractData
 
-os.chdir('/home/coder/workspace/Data/2DOF_Machine/')
+os.chdir('/home/coder/workspace/Data/2DOF_Machine/Ten_Binning_Data')
 
 model = load_model('2DOF-CGTenBin.h5')
-readfile = ['2DOF_Data_PREDICTION_1']
+readfile = ['2DOF_Data_PREDICTION_1Z.csv']
 
 inputs, outputs = extractData(readfile)
 predicted = model.predict(inputs)
@@ -63,7 +63,7 @@ axes[2].legend()
 plt.tight_layout()
 
 # Adding labels and title
-plt.savefig("2DOFPredict.png") #this is super important on this system or else you won't be able to see plots
+plt.savefig("2DOF_Bin_Predict.png") #this is super important on this system or else you won't be able to see plots
 plt.show()
 
 #IF YOU WANT TO OVERLAY THE INPUT DATA, GET THE CODE FROM P2_CG_Predictor.py
