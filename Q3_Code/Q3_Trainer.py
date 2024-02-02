@@ -3,38 +3,38 @@ import numpy as np
 import pandas as pd
 from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU, BatchNormalization, Flatten, Dropout
 from tensorflow.keras.optimizers import Adam
-from JK_Loader import RNN_load_data
+from P2_CG_DataLoader import RNN_load_data
 
 # Length of the input sequence during training
 timesteps = 150
 
 # Data Sets
-Data_Set_1 = '2DOF_Data1Z.csv' # Add your file paths here
-Data_Set_2 = '2DOF_Data2X.csv'
-Data_Set_3 = '2DOF_Data3.csv'
-Data_Set_4 = '2DOF_Data4.csv'
-Data_Set_5 = '2DOF_Data5.csv'
-Data_Set_6 = '2DOF_Data6.csv'
-Data_Set_7 = '2DOF_Data7.csv'
-Data_Set_8 = '2DOF_Data8.csv'
-Data_Set_9 = '2DOF_Data9.csv'
-Data_Set_10 = '2DOF_Data10.csv'
-# Leave out Data_Set_1 because it is loaded in separately to set the size
-data = [Data_Set_10]#,Data_Set_4,Data_Set_5,Data_Set_6,Data_Set_7,Data_Set_8,Data_Set_9,Data_Set_10]  
+dataSet1 = "P2_Data1.csv"
+dataSet2 = "P2_Data2.csv"
+dataSet3 = "P2_Data3.csv"
+dataSet4 = "P2_Data4.csv"
+dataSet5 = "P2_Data5.csv"
+dataSet6 = "P2_Data6.csv"
+dataSet7 = "P2_Data7.csv"
+dataSet8 = "P2_Data8.csv"
+dataSet9 = "P2_Data9.csv"
+dataSet10 = "P2_Data10.csv"
 
-inputs, outputs = RNN_load_data(Data_Set_1, timesteps) 
+data = [dataSet2,dataSet3,dataSet4,dataSet5,dataSet5,dataSet6,dataSet7,dataSet8,dataSet9]
 
-for dataSet in data:
+inputs, outputs = RNN_load_data(data[0], timesteps)
+
+for dataSet in data[1:]:
     inputData, outputData = RNN_load_data(dataSet, timesteps)
     inputs = np.concatenate((inputs, inputData), axis=0)
     outputs = np.concatenate((outputs, outputData), axis=0)
-print(outputs)
+
 # Define the neural network model
 model_cg = Sequential([
-    GRU(units=25, activation='tanh',return_sequences=False),
-    Dense(units=20, activation='tanh'),
+    GRU(units=25, activation='tanh',return_sequences=True),
+    GRU(units=20, activation='tanh',return_sequences=False),
     Dense(units=10, activation='tanh'),
-    Dense(units=2, activation='softmax')  
+    Dense(units=3, activation='softmax')  
 ])
 
 # Compile the model
@@ -47,4 +47,4 @@ model_cg.fit(inputs, outputs, epochs=10, batch_size=1000)
 model_cg.fit(inputs, outputs, epochs=15, batch_size=5000)
 
 # Save the model
-model_cg.save('JK_CG_Model.h5')
+model_cg.save('CG_Model.h5')
