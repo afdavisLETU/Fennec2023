@@ -1,78 +1,57 @@
 import numpy as np
 from tensorflow import keras
 import matplotlib.pyplot as plt
-from P2_CG_DataLoader import RNN_load_data
+from Q3_DataLoader import RNN_load_data
 
-model_cg = 'P2_CG_Model.h5'
-readfile = 'LW-P2_Data10.csv'
-writefile = 'Prediction_CG.csv'
+model_cg = 'CG_Model.h5'
+timesteps = 750
+data_coeff = 0.15
 
-# Length of the input sequence during training
-timesteps = 150
-# Allows you to predict on the first n number of data points for debugging
-num_predictions = 250 # If value error: reduce number # If shape error: increase to displayed number
+# Test Data Sets
+dataSet1 = "AA_Data1.xlsx"
+dataSet2 = "BB_Data1.xlsx"
+dataSet3 = "CC_Data1.xlsx"
+dataSet4 = "AA_Data2.xlsx"
+dataSet5 = "AA_Data3.xlsx"
 
-inputs, outputs = RNN_load_data(readfile, timesteps)
-model = keras.models.load_model(model_cg)
-predicted = np.array([model.predict(np.array(inputs))])
-predicted = predicted[0]
-print(predicted)
+test_data = [dataSet1,dataSet2,dataSet3,dataSet4,dataSet5]
 
-# Plotting the data
-P0, P1, P2 = [], [], []
-x = range(len(outputs))
-for r in x:
-    P0.append(predicted[r, 0])
-    P1.append(predicted[r, 1])
-    P2.append(predicted[r, 2])
+for dataSet in test_data:
+    print("Loading Data...")
+    inputs, outputs = RNN_load_data(dataSet, timesteps, data_coeff)
+    model = keras.models.load_model(model_cg)
+    predicted = np.array([model.predict(np.array(inputs))])
+    predicted = predicted[0]
 
-P0_mean = np.mean(P0)
-P1_mean = np.mean(P1)
-P2_mean = np.mean(P2)
+   # Extracting predicted values
+    P = [predicted[:, i] for i in range(3)]
 
-# Calculate moving averages
-window_size = 1000  # You can adjust the window size as needed
-P0_avg = np.convolve(P0, np.ones(window_size) / window_size, mode='valid')
-P1_avg = np.convolve(P1, np.ones(window_size) / window_size, mode='valid')
-P2_avg = np.convolve(P2, np.ones(window_size) / window_size, mode='valid')
+    # Calculating means
+    P_means = [np.mean(p) for p in P]
 
-fig, axes = plt.subplots(3, 1, figsize=(15, 8))
+    # Classifying
+    categories = ["AA", "BB", "CC"]
+    classification = categories[np.argmax(P_means)]
+    print("CG Class:", classification)
 
-# Plot the first subplot with moving average
-axes[0].plot(x[:len(P0_avg)], P0_avg, color='red', label="P0 Moving Avg")
-axes[0].scatter(x, P0, color='blue', marker='o', alpha=0.5, label="P0")
-axes[0].axhline(y=P0_mean, color='orange', linestyle='--', label="P0 Mean")
-axes[0].set_xlabel("X-axis")
-axes[0].set_ylabel("Classification")
-axes[0].set_title("[1,0,0]")
-axes[0].legend()
+    # Calculate moving averages
+    window_size = 1000
+    P_avg = [np.convolve(p, np.ones(window_size) / window_size, mode='valid') for p in P]
 
-# Plot the second subplot with moving average
-axes[1].plot(x[:len(P1_avg)], P1_avg, color='red', label="P1 Moving Avg")
-axes[1].scatter(x, P1, color='blue', marker='o', alpha=0.5, label="P1")
-axes[1].axhline(y=P1_mean, color='orange', linestyle='--', label="P1 Mean")
-axes[1].set_xlabel("X-axis")
-axes[1].set_ylabel("Classification")
-axes[1].set_title("[0,1,0]")
-axes[1].legend()
+    # Plotting
+    fig, axes = plt.subplots(3, 1, figsize=(15, 8))
 
-# Plot the third subplot with moving average
-axes[2].plot(x[:len(P2_avg)], P2_avg, color='red', label="P2 Moving Avg")
-axes[2].scatter(x, P2, color='blue', marker='o', alpha=0.5, label="P2")
-axes[2].axhline(y=P2_mean, color='orange', linestyle='--', label="P2 Mean")
-axes[2].set_xlabel("X-axis")
-axes[2].set_ylabel("Classification")
-axes[2].set_title("[0,0,1]")
-axes[2].legend()
+    for i, (p, avg, mean, label) in enumerate(zip(P, P_avg, P_means, categories)):
+        axes[i].plot(range(len(avg)), avg, color='red', label=f"{label} Moving Avg")
+        axes[i].scatter(range(len(p)), p, color='blue', marker='o', alpha=0.25, label=f"{label}")
+        axes[i].axhline(y=mean, color='orange', linestyle='--', label=f"{label} Mean")
+        axes[i].set_title(label)
+        axes[i].legend()
 
-# Additional code to plot the original data
-axes[0].plot(x, inputs[:, 0, 0], color='green', linestyle='--', label="Actual P0")
-axes[1].plot(x, inputs[:, 0, 1], color='green', linestyle='--', label="Actual P1")
-axes[2].plot(x, inputs[:, 0, 2], color='green', linestyle='--', label="Actual P2")
+    # Adjust the spacing between subplots
+    plt.suptitle(f"{dataSet[:-5]} Predicted Class: {classification}", fontsize=16)
+    plt.tight_layout()
 
-# Adjust the spacing between subplots
-plt.tight_layout()
-
-# Adding labels and title
-plt.savefig("/home/coder/workspace/Goin/Fennec2023/Prototype_2/Center_of_Gravity/CGP2.png") #this is super important on this system or else you won't be able to see plots
-plt.show()
+    # Adding labels and title
+    plt.savefig(f"{dataSet[:-5]}.png")
+    plt.show()
