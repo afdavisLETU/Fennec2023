@@ -8,11 +8,11 @@ timesteps = 750
 data_coeff = 0.15
 
 # Test Data Sets
-dataSet1 = "Low_Wind/015_AA.xlsx"
-dataSet2 = "Low_Wind/019_AA.xlsx"
-dataSet3 = "Low_Wind/020_CC.xlsx"
-dataSet4 = "Low_Wind/023_AA.xlsx"
-dataSet5 = "Low_Wind/024_AA.xlsx"
+dataSet1 = "Low_Wind/005_AA.xlsx"
+dataSet2 = "Low_Wind/007_AA.xlsx"
+dataSet3 = "Low_Wind/016_BB.xlsx"
+dataSet4 = "Low_Wind/021_CC.xlsx"
+dataSet5 = "Low_Wind/022_AA.xlsx"
 
 test_data = [dataSet1,dataSet2,dataSet3,dataSet4,dataSet5]
 
@@ -32,7 +32,7 @@ for dataSet in test_data:
     # Classifying
     categories = ["AA", "BB", "CC"]
     classification = categories[np.argmax(P_means)]
-    print("CG Class:", classification, "Actual:", dataSet[13:15])
+    print("CG Class:", classification)
 
     # Calculate moving averages
     window_size = 1000
