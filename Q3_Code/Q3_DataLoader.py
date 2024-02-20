@@ -10,7 +10,7 @@ def get_data(file_path):
     #Read Values from Data Sheets
     xl = pd.ExcelFile(file_path)
     df = xl.parse("IMU_0")
-    IMU = np.transpose(np.array([df["GyrX"],df["GyrY"],df["GyrX"],df["AccX"],df["AccY"],df["AccZ"]],dtype='float'))
+    IMU = np.transpose(np.array([df["GyrX"],df["GyrY"],df["GyrZ"],df["AccX"],df["AccY"],df["AccZ"]],dtype='float'))
     df = xl.parse("RCOU")
     RCOU = np.transpose(np.array([df["C1"],df["C2"],df["C3"],df["C4"],df["C8"]],dtype='float'))
     #Duplicate RCOU Timesteps to match IMU Frequency
