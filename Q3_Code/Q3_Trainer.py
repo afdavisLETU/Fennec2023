@@ -6,19 +6,23 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l1_l2
 from Q3_DataLoader import RNN_load_data
 
+
 # Length of the input sequence during training
-timesteps = 750
-data_coeff = 0.1
+timesteps = 500
+data_coeff = 0.75
 
 # Data Sets
-dataSet1 = "Low_Wind/008_AA.csv"
-dataSet2 = "Low_Wind/006_BB.csv"
-dataSet3 = "Low_Wind/009_CC.csv"
-dataSet4 = "Low_Wind/014_AA.csv"
-dataSet5 = "Low_Wind/016_BB.csv"
-dataSet6 = "Low_Wind/020_CC.csv"
+dataSet1 = "Norm400Hz_008_AA.csv"
+dataSet2 = "Norm400Hz_006_BB.csv"
+dataSet3 = "Norm400Hz_009_CC.csv"
+dataSet4 = "Norm400Hz_010_AA.csv"
+dataSet5 = "Norm400Hz_016_BB.csv"
+dataSet6 = "Norm400Hz_020_CC.csv"
+dataSet7 = "Norm400Hz_021_CC.csv"
+dataSet8 = "Norm400Hz_023_AA.csv"
 
-data = [dataSet1,dataSet2,dataSet3,dataSet4,dataSet5,dataSet6]
+
+data = [dataSet1,dataSet2,dataSet3]#,dataSet4,dataSet5,dataSet6,dataSet8,dataSet2]#,dataSet8]
 
 inputs, outputs = RNN_load_data(data[0], timesteps, data_coeff)
 for dataSet in data[1:]:
@@ -45,9 +49,8 @@ opt = Adam(learning_rate=0.001)
 model_cg.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
 # Train the model
-model_cg.fit(inputs, outputs, epochs=2, batch_size=150)
-model_cg.fit(inputs, outputs, epochs=3, batch_size=250)
-#model_cg.fit(inputs, outputs, epochs=15, batch_size=750)
+model_cg.fit(inputs, outputs, epochs=5, batch_size=200)
+#model_cg.fit(inputs, outputs, epochs=3, batch_size=150)
 
 # Save the model
 model_cg.save('CG_Model.h5')

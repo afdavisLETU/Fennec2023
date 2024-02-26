@@ -4,17 +4,19 @@ import matplotlib.pyplot as plt
 from Q3_DataLoader import RNN_load_data
 
 model_cg = 'CG_Model.h5'
-timesteps = 750
-data_coeff = 0.15
+timesteps = 500
+data_coeff = 0.75
 
 # Test Data Sets
-dataSet1 = "Low_Wind/015_AA.xlsx"
-dataSet2 = "Low_Wind/019_AA.xlsx"
-dataSet3 = "Low_Wind/020_CC.xlsx"
-dataSet4 = "Low_Wind/023_AA.xlsx"
-#dataSet5 = "Low_Wind/024_AA.xlsx"
+dataSet1 = "Norm400Hz_027_CC.csv"
+dataSet2 = "Norm400Hz_026_CC.csv"
+dataSet3 = "Norm400Hz_028_AA.csv"
+dataSet4 = "Norm400Hz_019_AA.csv"
+dataSet5 = "Norm400Hz_021_CC.csv"
+dataSet6 = "Norm400Hz_023_AA.csv"
+dataSet7 = "Norm400Hz_016_BB.csv"
 
-test_data = [dataSet1,dataSet2,dataSet3,dataSet4,dataSet5]
+test_data = [dataSet1,dataSet2,dataSet3,dataSet4,dataSet5,dataSet6,dataSet7]
 
 for dataSet in test_data:
     print("Loading Data...")
@@ -32,7 +34,7 @@ for dataSet in test_data:
     # Classifying
     categories = ["AA", "BB", "CC"]
     classification = categories[np.argmax(P_means)]
-    print("CG Class:", classification, "Actual:", dataSet[13:15])
+    print("CG Class:", classification, "Actual:", dataSet[14:16])
 
     # Calculate moving averages
     window_size = 1000

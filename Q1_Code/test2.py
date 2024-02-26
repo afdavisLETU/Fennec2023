@@ -1,52 +1,26 @@
 import os
 import numpy as np
-from scipy.fft import fft, ifft
+import pandas as pd
 import matplotlib.pyplot as plt
+from Q1_DataLoader import get_data, Micah_Filter
+os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
+data_file = "synthetic_100.xlsx"
+IMU, RCOU = get_data(data_file)
+clean_IMU = Micah_Filter(IMU, 25, 100, 50)
+points = 10000
 
-def low_pass(data, noise_frequency, sampling_rate):
-    n = len(data)
-    fft_data = fft(data)
-    freq = np.fft.fftfreq(n, d=1/sampling_rate)
-    noise_mask = np.logical_and(freq < noise_frequency, freq > -noise_frequency)
-    clean_data = ifft(fft_data * noise_mask)
-    return clean_data.real
+# Generate x-axis values
+x = []
+for t in range(len(IMU)):
+    x.append(t/50) #Set Denominator to Frequency of Data
+x = np.array(x)
 
-# Define the dimensions of the array
-data_length = 750
-window = 15
-
-# Generate a 2D array of random numbers
-zeros = 250
-data = np.zeros(zeros)
-for i in range(data_length):
-    data = np.append(data, data[i+zeros-1]*0.9+np.random.uniform(-1, 1)*0.1)
-
-old_filter = low_pass(data, 10, 400)
-
-clean_data = []
-for i in range(len(data)-window+1):
-    clean_data.append(low_pass(data[i:window+i], 10, 400))
-clean_data = np.array(clean_data)
-
-# Compute the diagonals
-new_filter = []
-for i in range(window-1):
-    new_filter.append(clean_data[0,i])
-for r in range(len(clean_data) - window + 1):
-    diagonal_values = clean_data[r:r + window, window - np.arange(window) - 1]
-    new_filter.append(np.mean(diagonal_values))
-for i in range(window-1):
-    new_filter.append(clean_data[len(clean_data)-1,i+1])
-
-x = range(len(data))
-plt.plot(x, data)
-plt.plot(x, old_filter)
-#plt.plot(x, new_filter,'r--')
-plt.title("Heikkila Filter Test")
-plt.xlabel("Time")
-plt.ylabel("Value")
-
+# Plotting the data
+plt.title("Motion Prediction: " + data_file)
+plt.plot(x[:points], IMU[:points,2], label='Actual')
+plt.plot(x[:points], clean_IMU[:points,2],'r--', label='Predicted')
+plt.xlabel("Time (s)")
+plt.legend()
 plt.tight_layout()
-os.chdir('/home/coder/workspace/Data/Becky_Data/')
-plt.savefig('Test.png')
 plt.show()
+plt.savefig('Filter.png')

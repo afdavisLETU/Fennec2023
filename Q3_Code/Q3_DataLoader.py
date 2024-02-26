@@ -33,7 +33,7 @@ def get_data(file_path):
 
 def RNN_load_data(file_name, timesteps, data_coeff):
     # Load the CSV file
-    IMU, RCOU = get_data(file_name)
+    IMU, RCOU = csv_get_data(file_name)
 
     # Create data input and output sets
     inputs = []
@@ -62,3 +62,32 @@ def RNN_load_data(file_name, timesteps, data_coeff):
     inputs = [inputs[i] for i in random_indices]
     outputs = [outputs[i] for i in random_indices]
     return inputs, outputs
+
+
+def csv_get_data(file_path):
+    os.chdir('/home/coder/workspace/Data/Becky_Data/')
+    # Read Values from CSV file
+    df = pd.read_csv(file_path)
+    IMU = np.transpose(np.array([df.iloc[:,0], df.iloc[:,1], df.iloc[:,2], df.iloc[:,3], df.iloc[:,4], df.iloc[:,5]], dtype='float'))
+    RCOU = np.transpose(np.array([df.iloc[:,6], df.iloc[:,7], df.iloc[:,8], df.iloc[:,9], df.iloc[:,10]], dtype='float'))
+    
+    # Data Length Correction
+    RCOU = RCOU[:len(IMU)]
+    IMU = IMU[:len(RCOU)]
+
+    # #Duplicate RCOU Timesteps
+    # duplicated_array = []
+    # for row in RCOU:
+    #     duplicated_array.extend([row] * 40)
+    # RCOU = np.array(duplicated_array, dtype='float')
+    
+    # # Normalize Values
+    # for col in range(len(RCOU[0])):
+    #     RCOU[:, col] = (RCOU[:, col] - 1000) / 1000
+    # IMU_scaling = [3, 3, 3, 5, 5, 5]
+    # IMU_offsets = [0, 0, 0, 0.5, 0, 9.81]
+    # for col in range(len(IMU[0])):
+    #     IMU[:, col] = (IMU[:, col] + IMU_offsets[col]) / IMU_scaling[col]
+    
+    print("Data Set Retrieved")
+    return IMU, RCOU
