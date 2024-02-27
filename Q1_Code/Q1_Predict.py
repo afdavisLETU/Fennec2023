@@ -6,10 +6,10 @@ from Q1_DataLoader import csv_model_predict
 model = 'Model1.h5'
 os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
 test_data = "synthetic_125.csv"
-timesteps = 10
+timesteps = 25
 output = 3
 freq = 50
-num_predictions = 25 * freq
+num_predictions = 10 * freq
 pred_offset = 20 * freq
 
 actual, predicted = csv_model_predict(model, test_data, timesteps, output, num_predictions, pred_offset)

@@ -44,11 +44,9 @@ model.compile(optimizer=Adam(), loss='mse', metrics=['accuracy'])
 # Train the model
 inputs, outputs = get_data(data_sets, data_coeff)
 model.fit(inputs, outputs, epochs=5, batch_size=2000)
-#inputs, outputs = get_data(data_sets, data_coeff)
 model.fit(inputs, outputs, epochs=15, batch_size=5000)
-#inputs, outputs = get_data(data_sets, data_coeff)
-model.fit(inputs, outputs, epochs=30, batch_size=10000)
-model.fit(inputs, outputs, epochs=50, batch_size=50000)
+#model.fit(inputs, outputs, epochs=30, batch_size=10000)
+#model.fit(inputs, outputs, epochs=50, batch_size=50000)
 # Save the model
 model.save(model_name)
 print("Model Saved")
