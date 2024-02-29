@@ -1,11 +1,14 @@
+import os
 import numpy as np
 from tensorflow import keras
 import matplotlib.pyplot as plt
 from Q3_DataLoader import RNN_load_data
 
+os.chdir('/home/coder/workspace/Data/Becky_Data/')
+
 model_cg = 'CG_Model.h5'
-timesteps = 250
-data_coeff = 0.1
+timesteps = 256 # An error will occur if this is not the same as what the model was trained on
+data_coeff = 1
 
 # Test Data Sets
 dataSet1 = "Norm400Hz_005_AA.csv"
@@ -27,12 +30,13 @@ dataSet16 = "Norm400Hz_026_CC.csv"
 dataSet17 = "Norm400Hz_027_CC.csv"
 dataSet18 = "Norm400Hz_028_AA.csv"
 
-test_data = [dataSet1, dataSet2, dataSet3, dataSet4, dataSet5, dataSet6, dataSet7, dataSet8, dataSet9, dataSet10, dataSet11, dataSet12, dataSet13, dataSet14, dataSet15, dataSet16, dataSet17, dataSet18]
+test_data = [dataSet18, dataSet12, dataSet3, dataSet4, dataSet5, dataSet6, dataSet7, dataSet8, dataSet9, dataSet10, dataSet11, dataSet12, dataSet13, dataSet14, dataSet15, dataSet16, dataSet17, dataSet18]
+
+model = keras.models.load_model(model_cg)
 
 for dataSet in test_data:
     print("Loading Data...", dataSet)
     inputs, outputs = RNN_load_data(dataSet, timesteps, data_coeff)
-    model = keras.models.load_model(model_cg)
     predicted = np.array([model.predict(np.array(inputs))])
     predicted = predicted[0]
 
@@ -62,9 +66,12 @@ for dataSet in test_data:
         axes[i].legend()
 
     # Adjust the spacing between subplots
-    plt.suptitle(f"{dataSet[:-5]} - Predicted Class: {classification}", fontsize=16)
+    plt.suptitle(f"{dataSet[:-4]} - Predicted Class: {classification}", fontsize=16)
     plt.tight_layout()
 
     # Adding labels and title
-    plt.savefig(f"{dataSet[:-5]}.png")
+    plt.savefig(f"{dataSet[:-4]}.png")
     plt.show()
+
+    # Free up memory
+    del inputs, outputs, predicted, P, P_means, P_avg, fig, axes

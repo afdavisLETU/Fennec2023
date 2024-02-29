@@ -5,12 +5,12 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU, BatchNormalization, Flatten, Dropout
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l1_l2
-from Q3_DataLoader import RNN_load_data
+from Q3_DataLoader import RNN_load_data, trim_data_to_min_file_length
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
 # Length of the input sequence during training
-timesteps = 250
-data_coeff = 0.75
+timesteps = 256
+data_coeff = 1
 
 # Data Sets
 dataSet1 = "Norm400Hz_005_AA.csv"
@@ -32,20 +32,37 @@ dataSet16 = "Norm400Hz_026_CC.csv"
 dataSet17 = "Norm400Hz_027_CC.csv"
 dataSet18 = "Norm400Hz_028_AA.csv"
 
-# Number of Data Sets so far: 11A, 2B, 5C
+# Categorize the datasets
+datasets_AA = [dataSet1, dataSet3, dataSet4, dataSet6, dataSet7, dataSet8, dataSet10, dataSet13, dataSet14, dataSet15, dataSet18]
+datasets_BB = [dataSet2, dataSet9]
+datasets_CC = [dataSet5, dataSet11, dataSet12, dataSet16, dataSet17]
 
-#8,6,9,10,16,20
-#21,23
+# Shuffle the datasets in each category so that the model does not always train off of the earliest flights
+random.shuffle(datasets_AA)
+random.shuffle(datasets_BB)
+random.shuffle(datasets_CC)
 
-data = [dataSet2, dataSet4, dataSet5, dataSet6, dataSet9, dataSet11]
+# Find the smallest category
+min_category_size = min(len(datasets_AA), len(datasets_BB), len(datasets_CC))
+
+# Trim each category to the size of the smallest category
+datasets_AA = datasets_AA[:min_category_size]
+datasets_BB = datasets_BB[:min_category_size]
+datasets_CC = datasets_CC[:min_category_size]
+
+# Combine the data file names into categories
+data_categories = [datasets_AA, datasets_BB, datasets_CC]
+
+# Trim the data in each category to the minimum total length
+dataSets = trim_data_to_min_file_length(data_categories)
 
 # Define the neural network model
 model_cg = Sequential([
-    # GRU(units=128, activation='tanh', return_sequences=True, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
-    # Dropout(0.2),
-    GRU(units=10, activation='tanh', return_sequences=False, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
+    GRU(units=128, activation='tanh', return_sequences=True, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
     Dropout(0.2),
-    Dense(units=5, activation='relu'),
+    GRU(units=64, activation='tanh', return_sequences=False, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
+    Dropout(0.2),
+    Dense(units=32, activation='relu'),
     Dense(units=3, activation='softmax')  
 ])
 
@@ -56,23 +73,28 @@ model_cg.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accur
 # Define callbacks
 early_stopping = EarlyStopping(monitor='accuracy', patience=3)
 lr_reduction = ReduceLROnPlateau(monitor='loss', patience=2, verbose=1, factor=0.5)
-model_checkpoint_acc = ModelCheckpoint('CG_Model.h5', save_best_only=True, monitor='accuracy', mode='max')
+model_checkpoint_acc = ModelCheckpoint('CG_Model.h5', save_best_only=True, monitor='accuracy', mode='max', verbose=1)
 
-# Randomize the order of datasets
-random.shuffle(data)
+print(dataSets[0][0], "Loaded")
+inputs, outputs = RNN_load_data(dataSets[0][0], timesteps, data_coeff)
 
-print(data[0], "Loaded")
-inputs, outputs = RNN_load_data(data[0], timesteps, data_coeff)
-for dataSet in data[1:]:
-    print(dataSet, "Loaded")
-    inputData, outputData = RNN_load_data(dataSet, timesteps, data_coeff)
-    inputs = np.concatenate((inputs, inputData), axis=0)
-    outputs = np.concatenate((outputs, outputData), axis=0)
+first_dataset_loaded = False
+for category in dataSets:
+    for dataSet in category:
+        if not first_dataset_loaded:
+            first_dataset_loaded = True
+            continue
+        print(dataSet, "Loaded")
+        inputData, outputData = RNN_load_data(dataSet, timesteps, data_coeff)
+        inputs = np.concatenate((inputs, inputData), axis=0)
+        outputs = np.concatenate((outputs, outputData), axis=0)
 print("Data Loading Finished")
 print("Data Length:", len(inputs))
 
 # Train the model
-model_cg.fit(inputs, outputs, epochs=10, batch_size=100, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
+model_cg.fit(inputs, outputs, epochs=10, batch_size=128, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
+# model_cg.fit(inputs, outputs, epochs=2, batch_size=64, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
+# model_cg.fit(inputs, outputs, epochs=2, batch_size=32, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
 # model_cg.fit(inputs, outputs, epochs=5, batch_size=500)
 #model_cg.fit(inputs, outputs, epochs=3, batch_size=150)
 

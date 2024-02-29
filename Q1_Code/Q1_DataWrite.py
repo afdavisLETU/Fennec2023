@@ -6,7 +6,7 @@ from Q1_DataLoader import get_data, Micah_Filter, downsample
 os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
 
 print("Loading Data...")
-for i in range(159):
+for i in range(500):
     i += 1
     dataSet = f'synthetic_{i:03d}.xlsx'
     IMU, RCOU = get_data(dataSet)

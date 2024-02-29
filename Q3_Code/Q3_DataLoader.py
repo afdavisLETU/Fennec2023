@@ -91,3 +91,33 @@ def csv_get_data(file_path):
     
     print("Data Set Retrieved")
     return IMU, RCOU
+
+
+def trim_data_to_min_file_length(data_categories):
+    os.chdir('/home/coder/workspace/Data/Becky_Data/')
+    # Load the data from the files in each category
+    data = [[pd.read_csv(file) for file in category] for category in data_categories]
+
+    # Calculate the length of each file
+    file_lengths = [[len(df) for df in category] for category in data]
+
+    # Flatten the file lengths
+    flat_file_lengths = [length for sublist in file_lengths for length in sublist]
+
+    # Find the minimum file length
+    min_length = min(flat_file_lengths)
+
+    # Trim the data length of each file to the minimum length
+    trimmed_data = [[df[:min_length] for df in category] for category in data]
+
+    # Save the trimmed data as CSV files with "TrimmedTemp_" prepended to the original file name
+    trimmed_file_names = []
+    for category_data, category_files in zip(trimmed_data, data_categories):
+        category_file_names = []
+        for df, file in zip(category_data, category_files):
+            trimmed_file_name = f"TempTrimmed_{file}"
+            df.to_csv(trimmed_file_name, index=False)
+            category_file_names.append(trimmed_file_name)
+        trimmed_file_names.append(category_file_names)
+
+    return trimmed_file_names

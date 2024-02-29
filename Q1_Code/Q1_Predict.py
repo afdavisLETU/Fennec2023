@@ -3,14 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Q1_DataLoader import csv_model_predict
 
-model = 'Model1.h5'
+model = 'best_model.h5'
 os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
-test_data = "synthetic_125.csv"
-timesteps = 25
-output = 3
+test_data = "synthetic_305.csv"
+timesteps = 15
+output = 5
 freq = 50
-num_predictions = 10 * freq
-pred_offset = 20 * freq
+num_predictions = 25 * freq
+pred_offset = 15 * freq
 
 actual, predicted = csv_model_predict(model, test_data, timesteps, output, num_predictions, pred_offset)
 

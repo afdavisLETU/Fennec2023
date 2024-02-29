@@ -4,15 +4,16 @@ import pandas as pd
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, SimpleRNN, GRU, BatchNormalization, Flatten, Dropout
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from Q1_DataLoader import csv_load_data
 
 # Length of the input sequence during training
-timesteps = 25
-data_coeff = 0.5
-output = 3
+timesteps = 15
+data_coeff = 1
+output = 5
 model_name = 'Model1.h5'
 os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
-data_sets = 100
+data_sets = 150
 
 def get_data(data_sets, data_coeff):
     data = []
@@ -40,13 +41,26 @@ model = Sequential([
 
 # Compile the model
 model.compile(optimizer=Adam(), loss='mse', metrics=['accuracy'])
-
+checkpoint = ModelCheckpoint('best_model.h5', 
+                             monitor='loss', 
+                             verbose=1, 
+                             save_best_only=True, 
+                             mode='min')
+early_stopping = EarlyStopping(monitor='loss', 
+                               patience=2, 
+                               verbose=1, 
+                               restore_best_weights=True)
+reduce_lr = ReduceLROnPlateau(monitor='loss',
+                              factor=0.5,
+                              patience=5,
+                              verbose=1,
+                              min_lr=1e-6)
 # Train the model
 inputs, outputs = get_data(data_sets, data_coeff)
-model.fit(inputs, outputs, epochs=5, batch_size=2000)
-model.fit(inputs, outputs, epochs=15, batch_size=5000)
-#model.fit(inputs, outputs, epochs=30, batch_size=10000)
-#model.fit(inputs, outputs, epochs=50, batch_size=50000)
-# Save the model
-model.save(model_name)
-print("Model Saved")
+model.fit(inputs, outputs, epochs=1, batch_size=2500,callbacks=[checkpoint, early_stopping, reduce_lr])
+model.fit(inputs, outputs, epochs=5, batch_size=5000,callbacks=[checkpoint, early_stopping, reduce_lr])
+model.fit(inputs, outputs, epochs=10, batch_size=15000,callbacks=[checkpoint, early_stopping, reduce_lr])
+model.fit(inputs, outputs, epochs=1, batch_size=2500,callbacks=[checkpoint, early_stopping, reduce_lr])
+model.fit(inputs, outputs, epochs=5, batch_size=5000,callbacks=[checkpoint, early_stopping, reduce_lr])
+model.fit(inputs, outputs, epochs=10, batch_size=15000,callbacks=[checkpoint, early_stopping, reduce_lr])
+model.fit(inputs, outputs, epochs=25, batch_size=25000,callbacks=[checkpoint, early_stopping, reduce_lr])
