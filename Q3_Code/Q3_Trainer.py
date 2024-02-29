@@ -9,7 +9,7 @@ from Q3_DataLoader import RNN_load_data, trim_data_to_min_file_length
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
 # Length of the input sequence during training
-timesteps = 256
+timesteps = 64
 data_coeff = 1
 
 # Data Sets
@@ -58,11 +58,11 @@ dataSets = trim_data_to_min_file_length(data_categories)
 
 # Define the neural network model
 model_cg = Sequential([
-    GRU(units=128, activation='tanh', return_sequences=True, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
+    GRU(units=8, activation='tanh', return_sequences=True, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
     Dropout(0.2),
-    GRU(units=64, activation='tanh', return_sequences=False, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
+    GRU(units=4, activation='tanh', return_sequences=False, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
     Dropout(0.2),
-    Dense(units=32, activation='relu'),
+    # Dense(units=32, activation='relu'),
     Dense(units=3, activation='softmax')  
 ])
 
@@ -92,7 +92,7 @@ print("Data Loading Finished")
 print("Data Length:", len(inputs))
 
 # Train the model
-model_cg.fit(inputs, outputs, epochs=10, batch_size=128, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
+model_cg.fit(inputs, outputs, epochs=25, batch_size=128, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
 # model_cg.fit(inputs, outputs, epochs=2, batch_size=64, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
 # model_cg.fit(inputs, outputs, epochs=2, batch_size=32, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
 # model_cg.fit(inputs, outputs, epochs=5, batch_size=500)

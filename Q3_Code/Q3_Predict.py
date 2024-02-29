@@ -7,7 +7,7 @@ from Q3_DataLoader import RNN_load_data
 os.chdir('/home/coder/workspace/Data/Becky_Data/')
 
 model_cg = 'CG_Model.h5'
-timesteps = 256 # An error will occur if this is not the same as what the model was trained on
+timesteps = 64 # An error will occur if this is not the same as what the model was trained on
 data_coeff = 1
 
 # Test Data Sets
@@ -30,7 +30,7 @@ dataSet16 = "Norm400Hz_026_CC.csv"
 dataSet17 = "Norm400Hz_027_CC.csv"
 dataSet18 = "Norm400Hz_028_AA.csv"
 
-test_data = [dataSet18, dataSet12, dataSet3, dataSet4, dataSet5, dataSet6, dataSet7, dataSet8, dataSet9, dataSet10, dataSet11, dataSet12, dataSet13, dataSet14, dataSet15, dataSet16, dataSet17, dataSet18]
+test_data = [dataSet13, dataSet14, dataSet15, dataSet17]#, dataSet5, dataSet6, dataSet7, dataSet8, dataSet9, dataSet10, dataSet11, dataSet12, dataSet13, dataSet14, dataSet15, dataSet16, dataSet17, dataSet18]
 
 model = keras.models.load_model(model_cg)
 
@@ -66,7 +66,7 @@ for dataSet in test_data:
         axes[i].legend()
 
     # Adjust the spacing between subplots
-    plt.suptitle(f"{dataSet[:-4]} - Predicted Class: {classification}", fontsize=16)
+    plt.suptitle(f"{dataSet[:-4]} - Predicted Class: {classification}  - data_coeff: {data_coeff} - Timesteps: {timesteps}", fontsize=16)
     plt.tight_layout()
 
     # Adding labels and title
