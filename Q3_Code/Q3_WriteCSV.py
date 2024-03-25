@@ -24,8 +24,24 @@ dataSet15 = "Low_Wind/025_AA.xlsx"
 dataSet16 = "Low_Wind/026_CC.xlsx"
 dataSet17 = "Low_Wind/027_CC.xlsx"
 dataSet18 = "Low_Wind/028_AA.xlsx"
+dataSet19 = "Low_Wind/029_AA.xlsx"
+dataSet20 = "Low_Wind/030_AA.xlsx"
+dataSet21 = "Low_Wind/062_BB.xlsx"
+dataSet22 = "Low_Wind/065_BB.xlsx"
+dataSet23 = "Low_Wind/066_CC.xlsx"
+dataSet24 = "Low_Wind/067_BB.xlsx"
+dataSet25 = "Low_Wind/068_BB.xlsx"
+dataSet26 = "Low_Wind/069_BB.xlsx"
+dataSet27 = "Low_Wind/070_CC.xlsx"
+dataSet28 = "Low_Wind/071_CC.xlsx"
+dataSet29 = "Low_Wind/072_BB.xlsx"
+dataSet30 = "Low_Wind/073_BB.xlsx"
+dataSet31 = "Low_Wind/074_CC.xlsx"
+dataSet32 = "Low_Wind/075_CC.xlsx"
+dataSet33 = "Low_Wind/076_CC.xlsx"
 
-data = [dataSet1,dataSet2,dataSet3,dataSet4,dataSet5,dataSet6,dataSet7,dataSet8,dataSet9,dataSet10,dataSet11,dataSet12,dataSet13,dataSet14,dataSet15,dataSet16,dataSet17,dataSet18]
+
+data = [dataSet21,dataSet22,dataSet23,dataSet24,dataSet25,dataSet26,dataSet27,dataSet28,dataSet29,dataSet30,dataSet31,dataSet32,dataSet33]#,dataSet14,dataSet15,dataSet16,dataSet17,dataSet18]
 
 print("Loading Data...")
 for dataSet in data:

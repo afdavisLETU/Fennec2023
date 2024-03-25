@@ -3,22 +3,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Q1_DataLoader import csv_model_predict
 
-model = 'best_model.h5'
+output = 0
+model = f'Recovery_{output}.h5'
 os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
 test_data = "synthetic_305.csv"
-timesteps = 15
-output = 5
-freq = 50
-num_predictions = 25 * freq
-pred_offset = 15 * freq
+timesteps = 25
+freq = 20
+num_predictions = 20 * freq
+pred_offset = 25 * freq
 
 actual, predicted = csv_model_predict(model, test_data, timesteps, output, num_predictions, pred_offset)
+
+def calculate_nrmse(actual, predicted):
+    actual = np.array(actual)
+    predicted = np.array(predicted)
+    rmse = np.sqrt(np.mean((predicted - actual) ** 2))
+    nrmse = rmse / (np.max(actual) - np.min(actual))
+    return nrmse
 
 deviation = np.std(actual)
 mae = np.mean(np.abs(actual - predicted))
 accuracy = deviation / (deviation + mae)
 print("Percent Accuracy:", accuracy*100)
-
+print(mae)
+print(calculate_nrmse(actual,predicted))
 # Generate x-axis values
 x = []
 for t in range(num_predictions):
@@ -26,11 +34,15 @@ for t in range(num_predictions):
 x = np.array(x)
 
 # Plotting the data
+os.chdir('/home/coder/workspace/Graphs/')
+plt.style.use("./styles/rose-pine.mplstyle")
+plt.figure(dpi=300)
 plt.title("Motion Prediction: " + test_data)
-plt.plot(x, actual, label='Actual')
-plt.plot(x, predicted, linestyle='--',color='#FF0000', label='Final Pred') #'#92c6e2'
+plt.axvline(x=timesteps/freq, color='#FFBD82', linestyle=':')
+plt.plot(x, actual, color='#3498DB', label='Actual Values')
+plt.plot(x, predicted, linestyle='--', label='Predicted Values')
 plt.xlabel("Time (s)")
-plt.ylabel(model[:-9])
+plt.ylabel("X-Acc (Normalized)")
 plt.legend()
 plt.tight_layout()
 plt.show()

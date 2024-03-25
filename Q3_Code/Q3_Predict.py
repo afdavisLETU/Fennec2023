@@ -20,7 +20,7 @@ dataSet6 = "Norm400Hz_010_AA.csv"
 dataSet7 = "Norm400Hz_014_AA.csv"
 dataSet8 = "Norm400Hz_015_AA.csv"
 dataSet9 = "Norm400Hz_016_BB.csv"
-dataSet10 = "Norm400Hz_019_AA.csv"
+dataSet10 = "Norm400Hz_019_AA.csv" #BAD DATASET
 dataSet11 = "Norm400Hz_020_CC.csv"
 dataSet12 = "Norm400Hz_021_CC.csv"
 dataSet13 = "Norm400Hz_022_AA.csv"
@@ -29,8 +29,25 @@ dataSet15 = "Norm400Hz_025_AA.csv"
 dataSet16 = "Norm400Hz_026_CC.csv"
 dataSet17 = "Norm400Hz_027_CC.csv"
 dataSet18 = "Norm400Hz_028_AA.csv"
+dataSet19 = "Norm400Hz_029_AA.csv"
+dataSet20 = "Norm400Hz_030_AA.csv"
+dataSet21 = "Norm400Hz_062_BB.csv"
+dataSet22 = "Norm400Hz_065_BB.csv"
+dataSet23 = "Norm400Hz_066_CC.csv"
+dataSet24 = "Norm400Hz_067_BB.csv"
+dataSet25 = "Norm400Hz_068_BB.csv"
+dataSet26 = "Norm400Hz_069_BB.csv"
+dataSet27 = "Norm400Hz_070_CC.csv"
+dataSet28 = "Norm400Hz_071_CC.csv"
+dataSet29 = "Norm400Hz_072_BB.csv"
+dataSet30 = "Norm400Hz_073_BB.csv"
+dataSet31 = "Norm400Hz_074_CC.csv"
+dataSet32 = "Norm400Hz_075_CC.csv"
+dataSet33 = "Norm400Hz_076_CC.csv"
 
-test_data = [dataSet13, dataSet14, dataSet15, dataSet17]#, dataSet5, dataSet6, dataSet7, dataSet8, dataSet9, dataSet10, dataSet11, dataSet12, dataSet13, dataSet14, dataSet15, dataSet16, dataSet17, dataSet18]
+test_data = [dataSet18, dataSet20,
+             dataSet9, dataSet22, dataSet30, dataSet21,
+             dataSet5, dataSet16, dataSet32]
 
 model = keras.models.load_model(model_cg)
 
@@ -56,6 +73,9 @@ for dataSet in test_data:
     P_avg = [np.convolve(p, np.ones(window_size) / window_size, mode='valid') for p in P]
 
     # Plotting
+    os.chdir('/home/coder/workspace/Graphs/')
+    plt.style.use("./styles/rose-pine-dawn.mplstyle")
+    plt.figure(dpi=300)
     fig, axes = plt.subplots(3, 1, figsize=(15, 8))
 
     for i, (p, avg, mean, label) in enumerate(zip(P, P_avg, P_means, categories)):

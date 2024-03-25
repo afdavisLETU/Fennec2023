@@ -8,10 +8,11 @@ from P2_DataLoader import RNN_model_predict
 
 model_y = 'P2_Model_Y.h5'
 model_p = 'P2_Model_P.h5'
-readfile = 'RW-P2_Data9.csv'
+readfile = "P2_Data9.csv"
 writefile = 'Prediction.csv'
-timesteps = 15
-num_predictions = 250 # If value error: reduce number # If shape error: increase to displayed number
+timesteps = 10
+freq = 25
+num_predictions = 10 * freq # If value error: reduce number # If shape error: increase to displayed number
 
 actual, predicted = RNN_model_predict(model_y, model_p, readfile, writefile, timesteps, num_predictions)
 
@@ -28,7 +29,7 @@ print("Percent Accuracy:", accuracy*100)
 # Generate x-axis values
 x = []
 for t in range(num_predictions):
-    x.append(t/25)
+    x.append(t/freq)
 x = np.array(x)
 
 # Plotting the data

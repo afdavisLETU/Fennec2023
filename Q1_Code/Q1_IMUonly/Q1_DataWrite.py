@@ -11,9 +11,9 @@ for i in range(500):
     dataSet = f'synthetic_{i:03d}.xlsx'
     IMU, RCOU = get_data(dataSet)
     #IMU = Micah_Filter(IMU, 25, 250, 50)
-    IMU_50Hz = downsample(IMU, 8)
-    RCOU_50Hz = downsample(RCOU, 8)
-    csv_data = np.array(np.hstack((IMU_50Hz, RCOU_50Hz)))
+    IMU_20Hz = downsample(IMU, 20)
+    RCOU_20Hz = downsample(RCOU, 20)
+    csv_data = np.array(np.hstack((IMU_20Hz, RCOU_20Hz)))
     df = pd.DataFrame(csv_data)
     df.to_csv(f'{dataSet[:-5]}.csv', index=False, header=False)
     print(f"{dataSet[:-5]}.csv has been created.")
