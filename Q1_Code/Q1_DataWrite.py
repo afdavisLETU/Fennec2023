@@ -1,19 +1,21 @@
 import os
 import numpy as np
 import pandas as pd
-from Q1_DataLoader import get_data, Micah_Filter, downsample
+from Q1_DataProcess import get_data, Micah_Filter, downsample
 
 os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
 
 print("Loading Data...")
-for i in range(500):
+for i in range(103,500):
     i += 1
     dataSet = f'synthetic_{i:03d}.xlsx'
-    IMU, RCOU = get_data(dataSet)
+    BARO, ATT, IMU, RCOU = get_data(dataSet)
     #IMU = Micah_Filter(IMU, 25, 250, 50)
+    BARO_20Hz = downsample(BARO, 20)
+    ATT_20Hz = downsample(ATT, 20)
     IMU_20Hz = downsample(IMU, 20)
     RCOU_20Hz = downsample(RCOU, 20)
-    csv_data = np.array(np.hstack((IMU_20Hz, RCOU_20Hz)))
+    csv_data = np.array(np.hstack((BARO_20Hz, IMU_20Hz, ATT_20Hz, RCOU_20Hz)))
     df = pd.DataFrame(csv_data)
     df.to_csv(f'{dataSet[:-5]}.csv', index=False, header=False)
     print(f"{dataSet[:-5]}.csv has been created.")
