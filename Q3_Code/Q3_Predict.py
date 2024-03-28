@@ -64,9 +64,10 @@ dataSet47 = "Norm400Hz_074_CC.csv"
 dataSet48 = "Norm400Hz_075_CC.csv"
 dataSet49 = "Norm400Hz_076_CC.csv"
 
-test_data = [dataSet33, dataSet34, dataSet35, dataSet36,
-             dataSet46,
-             dataSet49]
+test_data = [dataSet47, dataSet42, dataSet21, #Trained DataSets
+             dataSet33, dataSet34, dataSet35, dataSet36, #Unfamiliar DataSets - AA
+             dataSet46, # - BB
+             dataSet49] # - CC
 
 model = keras.models.load_model(model_cg)
 

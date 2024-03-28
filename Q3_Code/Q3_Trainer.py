@@ -10,7 +10,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCh
 
 # Length of the input sequence during training
 timesteps = 64
-data_coeff = 0.1
+data_coeff = 1
 
 # Data Sets
 #REV 1
@@ -98,9 +98,9 @@ dataSets = trim_data_to_min_file_length(data_categories)
 # Define the neural network model
 model_cg = Sequential([
     GRU(units=8, activation='tanh', return_sequences=True, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
-    Dropout(0.2),
+    Dropout(0.05),
     GRU(units=4, activation='tanh', return_sequences=False, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
-    Dropout(0.2),
+    Dropout(0.05),
     Dense(units=3, activation='softmax')  
     # GRU(units=128, activation='tanh', return_sequences=True, kernel_regularizer=l1_l2(l1=1e-5, l2=1e-4)),
     # Dropout(0.2),
@@ -137,19 +137,15 @@ print("Data Length:", len(inputs))
 
 # Train the model
 model_cg.fit(inputs, outputs, epochs=25, batch_size=1024, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
-# model_cg.fit(inputs, outputs, epochs=2, batch_size=64, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
-# model_cg.fit(inputs, outputs, epochs=2, batch_size=32, callbacks=[early_stopping, lr_reduction, model_checkpoint_acc])
-# model_cg.fit(inputs, outputs, epochs=5, batch_size=500)
-#model_cg.fit(inputs, outputs, epochs=3, batch_size=150)
-
-# Save the inputs and outputs as CSV files for the Update_Model.py code to continue to train on the same data
-# Reshape the inputs to a 2D array
-inputs_2d = inputs.reshape(inputs.shape[0], -1)
-# Save the reshaped inputs as a CSV file
-pd.DataFrame(inputs_2d).to_csv('Temp_inputs.csv', index=False)
-pd.DataFrame(outputs).to_csv('Temp_outputs.csv', index=False)
-print("Inputs and outputs saved as CSV files")
 
 # Save the model (Unnecessary because the ModelCheckpoint callback already saves it)
 # model_cg.save('CG_Model.h5')
 print("Model Saved")
+
+# # Save the inputs and outputs as CSV files for the Update_Model.py code to continue to train on the same data
+# # Reshape the inputs to a 2D array
+# inputs_2d = inputs.reshape(inputs.shape[0], -1)
+# # Save the reshaped inputs as a CSV file
+# pd.DataFrame(inputs_2d).to_csv('Temp_inputs.csv', index=False)
+# pd.DataFrame(outputs).to_csv('Temp_outputs.csv', index=False)
+# print("Inputs and outputs saved as CSV files")

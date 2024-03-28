@@ -3,14 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Q1_DataProcess import model_predict
 
-output = 7
+output = 5
 model = f'Model_{output}.h5'
 os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
-test_data = "synthetic_251.csv"
+test_data = "synthetic_255.csv"
 timesteps = 20
-freq = 20
-num_predictions = 50 * freq
-pred_offset = 5 * freq
+freq = 10
+num_predictions = 10 * freq
+pred_offset = 25 * freq
 
 actual, predicted = model_predict(model, test_data, timesteps, output, num_predictions, pred_offset)
 
@@ -21,8 +21,8 @@ def calculate_nrmse(actual, predicted):
     nrmse = rmse / (np.max(actual) - np.min(actual))
     return nrmse
 
-print("Percent Accuracy:", (1-calculate_nrmse(actual,predicted))*100)
-print("NRMSE:", calculate_nrmse(actual,predicted)*100)
+print("Percent Accuracy:", (1-calculate_nrmse(actual[timesteps:],predicted[timesteps:]))*100)
+print("NRMSE:", calculate_nrmse(actual[timesteps:],predicted[timesteps:])*100)
 # Generate x-axis values
 x = []
 for t in range(num_predictions):

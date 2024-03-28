@@ -114,7 +114,7 @@ def load_data(file_name, timesteps, data_coeff, output):
     outputs = []
     for b in range(timesteps,len(data)):
         a = b-timesteps
-        inputs.append(data[a:b,7:])
+        inputs.append(data[a:b])
         outputs.append(data[b,output])
 
     inputs = np.array(inputs)
@@ -136,7 +136,7 @@ def model_predict(model_name, test_data, timesteps, output, num_predictions, pre
 
     # Create data input and output sets
     a, b = pred_offset, (pred_offset + timesteps)
-    inputs = np.array(data[a:b,7:])
+    inputs = np.array(data[a:b])
     actual = np.array(data[a:a+num_predictions,output])
     predictions = np.array(data[a:b,output])
 
@@ -147,10 +147,41 @@ def model_predict(model_name, test_data, timesteps, output, num_predictions, pre
         predicted = np.array(model.predict(np.array([inputs]),verbose=0))
         # Update the input data by eliminating the first timestep and adding the prediction
         c = i + timesteps + pred_offset
-        new_input = data[c,7:]
-        if output > 6:
-            new_input[output-7]=predicted[0]
+        new_input = data[c]
+        new_input[output]=predicted[0]
         predictions = np.append(predictions, predicted[0])
+        inputs = np.concatenate([inputs[1:], [new_input]])
+
+    return actual, predictions
+
+def model_simulation(test_data, timesteps, num_predictions, pred_offset):
+    # Load the CSV file
+    df = pd.read_csv(test_data)
+    data = np.array(df.values)
+
+    # Create data input and output sets
+    a, b = pred_offset, (pred_offset + timesteps)
+    inputs = np.array(data[a:b])
+    actual = np.array(data[a:a+num_predictions,:9])
+    predictions = np.array(data[a:b,:9])
+    # Load the trained model
+    models = []
+    for i in range(9):
+        model = keras.models.load_model(f"Model_{i}.h5")
+        models.append(model)
+
+    for i in range(num_predictions - timesteps):
+        print(i+timesteps, "of", num_predictions, end='\r')
+        predicted = []
+        for model in models:
+            prediction = np.array(model.predict(np.array([inputs]),verbose=0))
+            predicted.append(prediction[0,0])
+        # Update the input data by eliminating the first timestep and adding the prediction
+        c = i + timesteps + pred_offset
+        new_input = data[c]
+        for i in range(len(predicted)):
+            new_input[i]=predicted[i]
+        predictions = np.append(predictions, np.array([predicted]), axis=0)
         inputs = np.concatenate([inputs[1:], [new_input]])
 
     return actual, predictions
