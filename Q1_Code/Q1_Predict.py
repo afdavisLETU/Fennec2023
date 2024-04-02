@@ -3,14 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Q1_DataProcess import model_predict
 
-output = 5
+output = 9
 model = f'Model_{output}.h5'
-os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
-test_data = "synthetic_255.csv"
-timesteps = 20
-freq = 10
+os.chdir('/home/coder/workspace/Data/Simulator_Data/')
+test_data = "Normal_Test.csv"
+timesteps = 10
+freq = 20
 num_predictions = 10 * freq
-pred_offset = 25 * freq
+pred_offset = 80 * freq
 
 actual, predicted = model_predict(model, test_data, timesteps, output, num_predictions, pred_offset)
 
@@ -42,4 +42,4 @@ plt.ylabel(f'Output {output}')
 plt.legend()
 plt.tight_layout()
 plt.show()
-plt.savefig('Predict.png')
+plt.savefig(f'Predict{output}.png')

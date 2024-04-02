@@ -55,14 +55,34 @@ dataSet46 = "Low_Wind/073_BB.xlsx"
 dataSet47 = "Low_Wind/074_CC.xlsx"
 dataSet48 = "Low_Wind/075_CC.xlsx"
 dataSet49 = "Low_Wind/076_CC.xlsx"
+dataSet50 = "Low_Wind/Exp_030_AA.xlsx"
+dataSet51 = "Low_Wind/Exp_031_AA.xlsx"
+dataSet52 = "Low_Wind/Exp_032_AA.xlsx"
+dataSet53 = "Low_Wind/Exp_033_AA.xlsx"
+dataSet54 = "Low_Wind/Exp_035_AA.xlsx"
+dataSet55 = "Low_Wind/Exp_051_AA.xlsx"
+dataSet56 = "Low_Wind/Exp_054_AA.xlsx"
+dataSet57 = "Low_Wind/Exp_056_AA.xlsx"
+dataSet58 = "Low_Wind/Exp_062_BB.xlsx"
+dataSet59 = "Low_Wind/Exp_065_BB.xlsx"
+dataSet60 = "Low_Wind/Exp_066_CC.xlsx"
+dataSet61 = "Low_Wind/Exp_067_BB.xlsx"
+dataSet62 = "Low_Wind/Exp_068_BB.xlsx"
+dataSet63 = "Low_Wind/Exp_069_BB.xlsx"
+dataSet64 = "Low_Wind/Exp_070_CC.xlsx"
+dataSet65 = "Low_Wind/Exp_071_CC.xlsx"
+dataSet66 = "Low_Wind/Exp_072_BB.xlsx"
+dataSet67 = "Low_Wind/Exp_073_BB.xlsx"
+dataSet68 = "Low_Wind/Exp_074_CC.xlsx"
+dataSet69 = "Low_Wind/Exp_075_CC.xlsx"
+dataSet70 = "Low_Wind/Exp_076_CC.xlsx"
 
-
-data = [dataSet21, dataSet22, dataSet23, dataSet24, dataSet25, dataSet26, dataSet27, dataSet28, dataSet29, dataSet30, dataSet31, dataSet32, dataSet33, dataSet34, dataSet35, dataSet36]
+data = [dataSet50, dataSet51, dataSet52, dataSet53, dataSet54, dataSet55, dataSet56, dataSet57, dataSet58, dataSet59, dataSet60, dataSet61, dataSet62, dataSet63, dataSet64, dataSet65, dataSet66, dataSet67, dataSet68, dataSet69, dataSet70]
 
 print("Loading Data...")
 for dataSet in data:
-    IMU, RCOU = get_data(dataSet)
-    csv_data = np.array(np.hstack((IMU, RCOU)))
+    IMU, RCOU, ATT = get_data(dataSet)
+    csv_data = np.array(np.hstack((IMU, RCOU, ATT)))
     df = pd.DataFrame(csv_data)
     file_name = os.path.basename(dataSet)  # Get the file name without the directory path
     df.to_csv(f'Norm400Hz_{file_name[:-5]}.csv', index=False, header=False)

@@ -4,15 +4,14 @@ import matplotlib.pyplot as plt
 from Q1_DataProcess import model_simulation
 
 os.chdir('/home/coder/workspace/Data/Synthetic_Data/')
-test_data = "synthetic_255.csv"
+test_data = "synthetic_025.csv"
 timesteps = 20
-freq = 10
-num_predictions = 20 * freq
+freq = 20
+num_predictions = 10 * freq
 pred_offset = 45 * freq
 
 actual, predicted = model_simulation(test_data, timesteps, num_predictions, pred_offset)
-print(actual)
-print(predicted)
+
 def calculate_nrmse(actual, predicted):
     actual = np.array(actual)
     predicted = np.array(predicted)
@@ -45,5 +44,5 @@ for i in range(9):
     axs[i].legend()
 fig.tight_layout()
 
-plt.savefig('Simulation.png')
+plt.savefig('Simulation.jpg')
 plt.show()

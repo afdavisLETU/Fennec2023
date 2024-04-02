@@ -77,9 +77,9 @@ predict_BB = [dataSet46]#, dataSet22, dataSet30]
 predict_CC = [dataSet49]#, dataSet16, dataSet32]
 
 # Shuffle the datasets in each category so that the model does not always train off of the earliest flights
-random.shuffle(datasets_AA)
-random.shuffle(datasets_BB)
-random.shuffle(datasets_CC)
+# random.shuffle(datasets_AA)
+# random.shuffle(datasets_BB)
+# random.shuffle(datasets_CC)
 
 # Find the smallest category
 min_category_size = min(len(datasets_AA), len(datasets_BB), len(datasets_CC))

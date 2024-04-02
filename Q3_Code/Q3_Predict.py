@@ -63,11 +63,33 @@ dataSet46 = "Norm400Hz_073_BB.csv"
 dataSet47 = "Norm400Hz_074_CC.csv"
 dataSet48 = "Norm400Hz_075_CC.csv"
 dataSet49 = "Norm400Hz_076_CC.csv"
+#DataSets with ATT, IMU_0, RCOU
+dataSet50 = "Norm400Hz_Exp_030_AA.csv"
+dataSet51 = "Norm400Hz_Exp_031_AA.csv"
+dataSet52 = "Norm400Hz_Exp_032_AA.csv"
+dataSet53 = "Norm400Hz_Exp_033_AA.csv"
+dataSet54 = "Norm400Hz_Exp_035_AA.csv"
+dataSet55 = "Norm400Hz_Exp_051_AA.csv"
+dataSet56 = "Norm400Hz_Exp_054_AA.csv"
+dataSet57 = "Norm400Hz_Exp_056_AA.csv"
+dataSet58 = "Norm400Hz_Exp_062_BB.csv"
+dataSet59 = "Norm400Hz_Exp_065_BB.csv"
+dataSet60 = "Norm400Hz_Exp_066_CC.csv"
+dataSet61 = "Norm400Hz_Exp_067_BB.csv"
+dataSet62 = "Norm400Hz_Exp_068_BB.csv"
+dataSet63 = "Norm400Hz_Exp_069_BB.csv"
+dataSet64 = "Norm400Hz_Exp_070_CC.csv"
+dataSet65 = "Norm400Hz_Exp_071_CC.csv"
+dataSet66 = "Norm400Hz_Exp_072_BB.csv"
+dataSet67 = "Norm400Hz_Exp_073_BB.csv"
+dataSet68 = "Norm400Hz_Exp_074_CC.csv"
+dataSet69 = "Norm400Hz_Exp_075_CC.csv"
+dataSet70 = "Norm400Hz_Exp_076_CC.csv"
 
-test_data = [dataSet47, dataSet42, dataSet21, #Trained DataSets
-             dataSet33, dataSet34, dataSet35, dataSet36, #Unfamiliar DataSets - AA
-             dataSet46, # - BB
-             dataSet49] # - CC
+test_data = [dataSet53, dataSet62, dataSet68, #Trained DataSets
+             dataSet55, dataSet56, dataSet57, #Unfamiliar DataSets - AA
+             dataSet66, dataSet67, # - BB
+             dataSet70] # - CC
 
 model = keras.models.load_model(model_cg)
 
@@ -84,9 +106,9 @@ for dataSet in test_data:
     P_means = [np.mean(p) for p in P]
 
     # Classifying
-    categories = ["AA", "BB", "CC"]
+    categories = ["AA", "BB", "CC", "DD", "EE"]
     classification = categories[np.argmax(P_means)]
-    print("CG Class:", classification, "Actual:", dataSet[14:16])
+    print("CG Class:", classification, "Actual:", dataSet[18:20])
 
     # Calculate moving averages
     window_size = 1000
@@ -96,7 +118,7 @@ for dataSet in test_data:
     os.chdir('/home/coder/workspace/Graphs/Q3_Graphs/')
     # plt.style.use("./styles/rose-pine-dawn.mplstyle")
     plt.figure(dpi=300)
-    fig, axes = plt.subplots(3, 1, figsize=(15, 8))
+    fig, axes = plt.subplots(5, 1, figsize=(15, 8))
 
     for i, (p, avg, mean, label) in enumerate(zip(P, P_avg, P_means, categories)):
         axes[i].plot(range(len(avg)), avg, color='red', label=f"{label} Moving Avg")

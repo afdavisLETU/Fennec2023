@@ -56,10 +56,12 @@ def get_data(file_path):
     BARO = np.transpose(np.array([df["Alt"]],dtype='float'))
     df = xl.parse("ATT")
     ATT = np.transpose(np.array([df["Roll"],df["Pitch"]],dtype='float'))
+    df = xl.parse("GPS")
+    GPS = np.transpose(np.array([df["Spd"]],dtype='float'))
     df = xl.parse("IMU_0")
     IMU = np.transpose(np.array([df["GyrX"],df["GyrY"],df["GyrZ"],df["AccX"],df["AccY"],df["AccZ"]],dtype='float'))
     df = xl.parse("RCOU")
-    RCOU = np.transpose(np.array([df["C1"],df["C2"],df["C3"],df["C4"]],dtype='float'))
+    RCOU = np.transpose(np.array([df["C1"],df["C2"],df["C3"],df["C4"],df["C8"]],dtype='float'))
     
     #Upsample BARO, ATT, and RCOU Timesteps
     duplicated_array = []
@@ -68,9 +70,9 @@ def get_data(file_path):
     BARO = np.array(duplicated_array, dtype='float')
 
     duplicated_array = []
-    for row in ATT:
-        duplicated_array.extend([row] * 40)
-    ATT = np.array(duplicated_array, dtype='float')
+    for row in GPS:
+        duplicated_array.extend([row] * 80)
+    GPS = np.array(duplicated_array, dtype='float')
 
     duplicated_array = []
     for row in RCOU:
@@ -78,22 +80,27 @@ def get_data(file_path):
     RCOU = np.array(duplicated_array, dtype='float')
 
     #Data Length Correction
-    trim = np.min([len(BARO),len(ATT),len(IMU),len(RCOU)])
+    trim = np.min([len(BARO),len(ATT),len(IMU),len(RCOU),len(GPS)])
     print("Data Length:", trim)
     RCOU = RCOU[:trim]
     IMU = IMU[:trim]
     BARO = BARO[:trim]
     ATT = ATT[:trim]
+    GPS = GPS[:trim]
 
     #Normalize Values
+    GPS_scaling = [20]
+    GPS_offsets = [0]
     BARO_scaling = [50]
     BARO_offsets = [0]
-    ATT_scaling = [25,25]
+    ATT_scaling = [50,50]
     ATT_offsets = [0,0]
-    RCOU_scaling = [1000,1000,1000,1000]
-    RCOU_offsets = [1600,1600,1600,1600]
-    IMU_scaling = [1,1,1,2,1,1]
-    IMU_offsets = [0,0,0,2,0,9.81]
+    RCOU_scaling = [100,100,100,100,1000]
+    RCOU_offsets = [1650,1650,1650,1500,1000]
+    IMU_scaling = [1,1,1,1,2,5]
+    IMU_offsets = [0,0,0,0,.75,9.81]
+    for col in range(len(GPS[0])):
+        GPS[:,col] = (GPS[:,col] - GPS_offsets[col]) / GPS_scaling[col]
     for col in range(len(BARO[0])):
         BARO[:,col] = (BARO[:,col] - BARO_offsets[col]) / BARO_scaling[col]
     for col in range(len(RCOU[0])):
@@ -103,7 +110,7 @@ def get_data(file_path):
     for col in range(len(ATT[0])):
         ATT[:,col] = (ATT[:,col] + ATT_offsets[col]) / ATT_scaling[col]
 
-    return BARO, ATT, IMU, RCOU
+    return BARO, ATT, GPS, IMU, RCOU
 
 def load_data(file_name, timesteps, data_coeff, output):
     # Load the CSV file
@@ -162,11 +169,11 @@ def model_simulation(test_data, timesteps, num_predictions, pred_offset):
     # Create data input and output sets
     a, b = pred_offset, (pred_offset + timesteps)
     inputs = np.array(data[a:b])
-    actual = np.array(data[a:a+num_predictions,:9])
-    predictions = np.array(data[a:b,:9])
+    actual = np.array(data[a:a+num_predictions,:10])
+    predictions = np.array(data[a:b,:10])
     # Load the trained model
     models = []
-    for i in range(9):
+    for i in range(10):
         model = keras.models.load_model(f"Model_{i}.h5")
         models.append(model)
 
@@ -179,7 +186,7 @@ def model_simulation(test_data, timesteps, num_predictions, pred_offset):
         # Update the input data by eliminating the first timestep and adding the prediction
         c = i + timesteps + pred_offset
         new_input = data[c]
-        for i in range(len(predicted)):
+        for i in range(10):
             new_input[i]=predicted[i]
         predictions = np.append(predictions, np.array([predicted]), axis=0)
         inputs = np.concatenate([inputs[1:], [new_input]])
