@@ -49,7 +49,7 @@ def downsample(data, divisor):
             downsampled_data[r, col] = np.mean(data[start_row:end_row, col])
     return downsampled_data
 
-def get_data(file_path):
+def get_sim_data(file_path):
     #Read Values from Data Sheets
     xl = pd.ExcelFile(file_path)
     df = xl.parse("BARO")
@@ -61,7 +61,7 @@ def get_data(file_path):
     df = xl.parse("IMU_0")
     IMU = np.transpose(np.array([df["GyrX"],df["GyrY"],df["GyrZ"],df["AccX"],df["AccY"],df["AccZ"]],dtype='float'))
     df = xl.parse("RCOU")
-    RCOU = np.transpose(np.array([df["C1"],df["C2"],df["C3"],df["C4"],df["C8"]],dtype='float'))
+    RCOU = np.transpose(np.array([df["C1"],df["C2"],df["C3"],df["C4"]],dtype='float'))
     
     #Upsample BARO, ATT, and RCOU Timesteps
     duplicated_array = []
@@ -99,6 +99,69 @@ def get_data(file_path):
     RCOU_offsets = [1650,1650,1650,1500,1000]
     IMU_scaling = [1,1,1,1,2,5]
     IMU_offsets = [0,0,0,0,.75,9.81]
+    for col in range(len(GPS[0])):
+        GPS[:,col] = (GPS[:,col] - GPS_offsets[col]) / GPS_scaling[col]
+    for col in range(len(BARO[0])):
+        BARO[:,col] = (BARO[:,col] - BARO_offsets[col]) / BARO_scaling[col]
+    for col in range(len(RCOU[0])):
+        RCOU[:,col] = (RCOU[:,col] - RCOU_offsets[col]) / RCOU_scaling[col]
+    for col in range(len(IMU[0])):
+        IMU[:,col] = (IMU[:,col] + IMU_offsets[col]) / IMU_scaling[col]
+    for col in range(len(ATT[0])):
+        ATT[:,col] = (ATT[:,col] + ATT_offsets[col]) / ATT_scaling[col]
+
+    return BARO, ATT, GPS, IMU, RCOU
+
+def get_real_data(file_path):
+    #Read Values from Data Sheets
+    xl = pd.ExcelFile(file_path)
+    df = xl.parse("BARO")
+    BARO = np.transpose(np.array([df["Alt"]],dtype='float'))
+    df = xl.parse("ATT")
+    ATT = np.transpose(np.array([df["Roll"],df["Pitch"]],dtype='float'))
+    df = xl.parse("GPS")
+    GPS = np.transpose(np.array([df["Spd"]],dtype='float'))
+    df = xl.parse("IMU_0")
+    IMU = np.transpose(np.array([df["GyrX"],df["GyrY"],df["GyrZ"],df["AccX"],df["AccY"],df["AccZ"]],dtype='float'))
+    df = xl.parse("RCOU")
+    RCOU = np.transpose(np.array([df["C1"],df["C2"],df["C3"],df["C4"],df["C8"]],dtype='float'))
+    
+    #Upsample BARO, ATT, and RCOU Timesteps
+    duplicated_array = []
+    for row in BARO:
+        duplicated_array.extend([row] * 40)
+    BARO = np.array(duplicated_array, dtype='float')
+
+    duplicated_array = []
+    for row in GPS:
+        duplicated_array.extend([row] * 80)
+    GPS = np.array(duplicated_array, dtype='float')
+
+    duplicated_array = []
+    for row in RCOU:
+        duplicated_array.extend([row] * 40)
+    RCOU = np.array(duplicated_array, dtype='float')
+
+    #Data Length Correction
+    trim = np.min([len(BARO),len(ATT),len(IMU),len(RCOU),len(GPS)])
+    print("Data Length:", trim)
+    RCOU = RCOU[:trim]
+    IMU = IMU[:trim]
+    BARO = BARO[:trim]
+    ATT = ATT[:trim]
+    GPS = GPS[:trim]
+
+    #Normalize Values
+    GPS_scaling = [20]
+    GPS_offsets = [0]
+    BARO_scaling = [50]
+    BARO_offsets = [0]
+    ATT_scaling = [50,50]
+    ATT_offsets = [0,0]
+    RCOU_scaling = [100,100,100,100,1000]
+    RCOU_offsets = [1400,1400,1575,1600,1000]
+    IMU_scaling = [1,1,1,1,2,5]
+    IMU_offsets = [0,0,0,0.75,0,9.81]
     for col in range(len(GPS[0])):
         GPS[:,col] = (GPS[:,col] - GPS_offsets[col]) / GPS_scaling[col]
     for col in range(len(BARO[0])):

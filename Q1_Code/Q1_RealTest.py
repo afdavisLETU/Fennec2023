@@ -3,12 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Q1_DataProcess import model_simulation
 
-os.chdir('/home/coder/workspace/Data/Simulator_Data/')
-test_data = "Normal_Test.csv"
+os.chdir('/home/coder/workspace/Data/Real_Data/')
+test_data = "064B.csv"
 timesteps = 15
 freq = 20
-num_predictions = 5 * freq
-pred_offset = 17 * freq
+num_predictions = 15 * freq
+pred_offset = 0 * freq
 
 actual, predicted = model_simulation(test_data, timesteps, num_predictions, pred_offset)
 
@@ -45,5 +45,5 @@ for i in range(10):
     axs[i].legend()
 fig.tight_layout()
 
-plt.savefig('Simulation.jpg')
+plt.savefig('Final_Results.jpg')
 plt.show()

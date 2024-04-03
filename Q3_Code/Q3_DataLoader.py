@@ -88,21 +88,6 @@ def csv_get_data(file_path):
     RCOU = RCOU[:len(IMU)]
     IMU = IMU[:len(RCOU)]
     ATT = ATT[:len(IMU)]
-
-    # #DONT NEED THIS BECAUSE THE CSV FILES ARE ALREADY FILTERED
-    # #Duplicate RCOU Timesteps
-    # duplicated_array = []
-    # for row in RCOU:
-    #     duplicated_array.extend([row] * 40)
-    # RCOU = np.array(duplicated_array, dtype='float')
-    
-    # # Normalize Values
-    # for col in range(len(RCOU[0])):
-    #     RCOU[:, col] = (RCOU[:, col] - 1000) / 1000
-    # IMU_scaling = [3, 3, 3, 5, 5, 5]
-    # IMU_offsets = [0, 0, 0, 0.5, 0, 9.81]
-    # for col in range(len(IMU[0])):
-    #     IMU[:, col] = (IMU[:, col] + IMU_offsets[col]) / IMU_scaling[col]
     
     print("Data Set Retrieved")
     return IMU, RCOU, ATT

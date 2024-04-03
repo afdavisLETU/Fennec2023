@@ -100,7 +100,7 @@ for dataSet in test_data:
     predicted = predicted[0]
 
    # Extracting predicted values
-    P = [predicted[:, i] for i in range(3)]
+    P = [predicted[:, i] for i in range(5)]
 
     # Calculating means
     P_means = [np.mean(p) for p in P]
@@ -116,7 +116,6 @@ for dataSet in test_data:
 
     # Plotting
     os.chdir('/home/coder/workspace/Graphs/Q3_Graphs/')
-    # plt.style.use("./styles/rose-pine-dawn.mplstyle")
     plt.figure(dpi=300)
     fig, axes = plt.subplots(5, 1, figsize=(15, 8))
 
